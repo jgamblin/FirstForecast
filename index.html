@@ -309,11 +309,14 @@
           <p>
             Notably, while administrative cataloging (GHSA) remains the primary
             driver of volume growth,
-            <strong>AI-automated vulnerability research</strong> has officially
-            started moving the needle on major vendor disclosure volumes — most
-            visibly in the Anthropic + Mozilla collaboration (Project
-            Glasswing), which contributed dozens of confirmed CVEs to Firefox
-            releases in Q1 2026.
+            <strong>AI-automated vulnerability research</strong> has started
+            moving the needle on major vendor disclosure volumes — most visibly
+            in the
+            <a href="https://www.vulncheck.com/blog/anthropic-glasswing-cves"
+              >Anthropic + Mozilla collaboration (Project Glasswing)</a
+            >, which contributed 28 confirmed Firefox CVEs in Q1 2026.
+            AI-discovered CVEs remain less than 1% of total volume but represent
+            a qualitatively new discovery channel.
           </p>
         </div>
 
@@ -484,8 +487,11 @@
               <td class="positive">+141%</td>
               <td>
                 <span class="badge badge-new">AI-Assisted Discovery</span>
-                Massive spike due to Anthropic's Claude models autonomously
-                finding bugs (Project Glasswing)
+                Growth driven by Anthropic's
+                <a href="https://red.anthropic.com/2026/mythos-preview/"
+                  >Project Glasswing</a
+                >
+                AI vulnerability research collaboration
               </td>
             </tr>
             <tr>
@@ -514,32 +520,37 @@
         </p>
 
         <div class="callout">
-          <strong>The GHSA Effect:</strong> GitHub's security advisory program
-          operates as a semi-curated editorial process: researchers and
-          maintainers submit advisories, GitHub's curation team reviews them,
-          and qualifying entries receive CVE IDs. The 449% growth reflects both
-          an expanded curation team and a deliberate effort to assign CVE IDs to
-          advisories that previously existed only with GHSA identifiers. This is
-          a <strong>cataloging expansion</strong> — increased visibility into
+          <strong>The GHSA Effect:</strong> GHSA's +3,528 CVEs alone account for
+          more than half of the total year-over-year growth. This is a
+          <strong>cataloging expansion</strong> — increased visibility into
           existing open-source vulnerabilities — not evidence that open-source
-          software suddenly became less secure.
+          software suddenly became less secure. The growth is expected to
+          plateau as the backfill of existing GHSA-only advisories completes.
         </div>
 
         <div class="callout methodology">
           <strong>The AI Discovery Effect:</strong> Mozilla's 141%
-          year-over-year increase is a leading indicator of frontier AI models
-          acting as defensive security tools. Anthropic's Claude Opus 4.6
-          autonomously discovered 22 vulnerabilities that were patched in
-          Firefox 148, and the newer Claude Mythos Preview identified 271 legacy
-          bugs and vulnerabilities patched in Firefox 150 (April 2026) as part
-          of <strong>Project Glasswing</strong> — a joint Mozilla–Anthropic
-          initiative to apply large language models to systematic codebase
-          auditing. VulnCheck has tracked 40 CVEs explicitly credited to
-          Anthropic researchers so far in 2026, with the vast majority (28)
-          belonging to Firefox. While AI-discovered CVEs remain a small fraction
-          of total volume today, the trajectory suggests this will become a
-          structurally significant source of new disclosures in H2 2026 and
-          beyond.
+          year-over-year increase is an early indicator of frontier AI models
+          acting as defensive security tools. Under
+          <strong
+            ><a href="https://red.anthropic.com/2026/mythos-preview/"
+              >Project Glasswing</a
+            ></strong
+          >
+          — a joint Mozilla–Anthropic initiative applying large language models
+          to systematic codebase auditing — Anthropic's models autonomously
+          discovered 22 vulnerabilities patched in Firefox 148, and a newer
+          model variant identified 271 legacy bugs and vulnerabilities patched
+          in Firefox 150 (April 2026).
+          <a href="https://www.vulncheck.com/blog/anthropic-glasswing-cves"
+            >VulnCheck has tracked</a
+          >
+          40 CVEs explicitly credited to Anthropic researchers so far in 2026,
+          with 28 belonging to Firefox. To be clear: AI-discovered CVEs account
+          for <strong>less than 1% of total 2026 volume</strong> to date and do
+          not materially affect the forecast overshoot. However, the trajectory
+          suggests AI-assisted auditing will become a structurally significant
+          discovery channel in H2 2026 and beyond.
         </div>
       </div>
 
@@ -706,7 +717,11 @@
           should be interpreted as
           <strong>scenario projections under current conditions</strong>, not
           high-confidence predictions. The 80% prediction interval for the full
-          year spans approximately 55,000–80,000 CVEs.
+          year spans approximately 55,000–80,000 CVEs. Note that the monthly
+          projections appear artificially smooth (range: 5,655–6,254) compared
+          to observed month-to-month variance in actuals — this is a known
+          artifact of ARIMA forecasts converging toward a level at longer
+          horizons. Actual monthly volumes will be more volatile than shown.
         </div>
         <div class="chart-container">
           <canvas id="forecastChart" height="260"></canvas>
@@ -848,7 +863,10 @@
             publication volume — enrichment lag creates blind spots. Consider
             filtering by CNA source when triaging: a GHSA advisory for a
             transitive npm dependency carries different operational urgency than
-            a Chrome or Linux kernel CVE.
+            a Chrome or Linux kernel CVE. Volume growth does not proportionally
+            increase exploitable-and-in-your-environment risk — the vast
+            majority of newly cataloged CVEs are low-to-medium severity library
+            issues that do not warrant SLA-driven remediation.
           </p>
         </div>
       </div>
@@ -882,6 +900,12 @@
                 "Patch Tuesday" effect visible in the Tuesday concentration
               </li>
             </ul>
+            <p class="uncertainty-note" style="margin-top: 0.75rem">
+              Note: Day-of-week totals (19,528) differ slightly from the Jan–Apr
+              total (20,293) due to CVEs with timestamps that lack time-zone
+              precision, placing them on boundary days depending on UTC vs.
+              local parsing.
+            </p>
           </div>
         </div>
       </div>
