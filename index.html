@@ -1,0 +1,1449 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CVE 2026 Half-Year Forecast Update — How It's Going</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/dist/chartjs-plugin-annotation.min.js"></script>
+    <style>
+      :root {
+        --primary: #1a1a2e;
+        --accent: #e94560;
+        --accent2: #0f3460;
+        --bg: #f8f9fa;
+        --card: #ffffff;
+        --text: #2d3436;
+        --muted: #636e72;
+        --green: #00b894;
+        --red: #d63031;
+        --orange: #e17055;
+        --border: #dfe6e9;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+        padding: 2rem;
+      }
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      header {
+        background: linear-gradient(135deg, var(--primary), var(--accent2));
+        color: white;
+        padding: 3rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+      }
+      header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+      header .subtitle {
+        opacity: 0.85;
+        font-size: 1.1rem;
+      }
+      header .meta {
+        margin-top: 1rem;
+        opacity: 0.7;
+        font-size: 0.9rem;
+      }
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 0.75rem;
+      }
+      .kpi-context {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-bottom: 2rem;
+        font-style: italic;
+      }
+      .kpi-card {
+        background: var(--card);
+        border-radius: 10px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        text-align: center;
+      }
+      .kpi-card .value {
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: var(--accent);
+      }
+      .kpi-card .value.red {
+        color: var(--red);
+      }
+      .kpi-card .label {
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-top: 0.3rem;
+      }
+      .section {
+        background: var(--card);
+        border-radius: 10px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+      .section h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        color: var(--primary);
+        border-bottom: 2px solid var(--accent);
+        padding-bottom: 0.5rem;
+        display: inline-block;
+      }
+      .chart-container {
+        position: relative;
+        width: 100%;
+        margin: 1.5rem 0;
+      }
+      .chart-container canvas {
+        width: 100% !important;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+      }
+      th {
+        background: var(--primary);
+        color: white;
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-weight: 600;
+      }
+      td {
+        padding: 0.6rem 1rem;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:hover td {
+        background: #f1f3f5;
+      }
+      .positive {
+        color: var(--red);
+        font-weight: 600;
+      }
+      .negative {
+        color: var(--green);
+        font-weight: 600;
+      }
+      .highlight-row {
+        background: #fff3f3;
+      }
+      .badge {
+        display: inline-block;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .badge-spike {
+        background: #ffe0e0;
+        color: var(--red);
+      }
+      .badge-new {
+        background: #e0f7fa;
+        color: #00838f;
+      }
+      .badge-decline {
+        background: #f3e5f5;
+        color: #6a1b9a;
+      }
+      .narrative {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: var(--text);
+      }
+      .narrative p {
+        margin-bottom: 1rem;
+      }
+      .callout {
+        background: linear-gradient(135deg, #fff9c4, #fff3e0);
+        border-left: 4px solid var(--orange);
+        padding: 1rem 1.5rem;
+        border-radius: 0 8px 8px 0;
+        margin: 1.5rem 0;
+      }
+      .callout.methodology {
+        background: linear-gradient(135deg, #e3f2fd, #e8eaf6);
+        border-left-color: var(--accent2);
+      }
+      .two-col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+      @media (max-width: 768px) {
+        .two-col {
+          grid-template-columns: 1fr;
+        }
+      }
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.8rem;
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+      }
+      .abbr-def {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-bottom: 1.5rem;
+        padding: 0.75rem 1rem;
+        background: #f1f3f5;
+        border-radius: 6px;
+      }
+      .uncertainty-note {
+        font-size: 0.85rem;
+        color: var(--muted);
+        font-style: italic;
+        margin-top: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>CVE 2026 Half-Year Forecast Update</h1>
+        <div class="subtitle">
+          Comparing the February 2026 FIRST.org Vulnerability Forecast Against
+          Actuals
+        </div>
+        <div class="meta">
+          Data through April 30, 2026 &bull; Source: CVE Program (cvelistV5)
+          &bull; Generated May 5, 2026
+        </div>
+      </header>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="value red">+46.3%</div>
+          <div class="label">
+            Cumulative Drift vs. Forecast<br />(Jan–Apr 2026)
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="value">30.6%</div>
+          <div class="label">MAPE<br />(Mean Absolute Percentage Error)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="value red">+6,420</div>
+          <div class="label">
+            Excess CVEs Published<br />Above February Forecast
+          </div>
+        </div>
+        <div class="kpi-card">
+          <div class="value">~68K</div>
+          <div class="label">
+            Revised 2026 Projection<br />(80% CI: 55K–80K)
+          </div>
+        </div>
+      </div>
+      <div class="kpi-context">
+        Overshoot driven primarily by expanded CNA (CVE Numbering Authority)
+        operations — not a surge in underlying software defects. See analysis
+        below.
+      </div>
+
+      <!-- Executive Summary -->
+      <div class="section">
+        <h2>How It's Going</h2>
+        <div class="abbr-def">
+          <strong>Key terms:</strong> A <strong>CNA</strong> (CVE Numbering
+          Authority) is an organization authorized to assign CVE IDs.
+          <strong>GHSA</strong> refers to GitHub Security Advisories, published
+          under the CNA shortName "GitHub_M." The
+          <strong>February forecast</strong> refers to FIRST.org's
+          <a
+            href="https://www.first.org/blog/20260211-vulnerability-forecast-2026"
+            >Average Case projection published February 11, 2026</a
+          >.
+        </div>
+        <div class="narrative">
+          <p>
+            Through the first four months of 2026, actual CVE publications are
+            tracking <strong>6,420 CVEs above</strong> the February Average Case
+            forecast, representing a
+            <strong>46.3% cumulative overshoot</strong> (MAPE: 30.6%). The
+            monthly divergence has accelerated — from +28% in January to +62% in
+            March — before stabilizing somewhat at +59% in April. The February
+            forecast assumed patterns consistent with 2024's growth trajectory,
+            but 2026 is outpacing even 2025's record-breaking pace.
+          </p>
+
+          <p>
+            The primary driver is a
+            <strong
+              >structural expansion of CNA operations at two
+              organizations</strong
+            >. GitHub Security Advisories (GHSA) has grown from 785 CVEs in
+            Jan–Apr 2025 to
+            <strong>4,313 in Jan–Apr 2026 — a 449% increase</strong> — now
+            publishing more CVEs than any other CNA. This growth reflects
+            GitHub's expanded curation team and a campaign to backfill CVE IDs
+            for advisories that previously existed only as GHSA identifiers.
+            Separately, VulnCheck — operating as a
+            <strong>CNA of Last Resort</strong> that assigns IDs to
+            vulnerabilities no other CNA has claimed — scaled from 26 CVEs to
+            <strong>837 (+3,119%)</strong>, absorbing backlog that previously
+            went unassigned. Together these two CNAs account for the majority of
+            year-over-year growth.
+          </p>
+
+          <p>
+            Notably, while administrative cataloging (GHSA) remains the primary
+            driver of volume growth,
+            <strong>AI-automated vulnerability research</strong> has officially
+            started moving the needle on major vendor disclosure volumes — most
+            visibly in the Anthropic + Mozilla collaboration (Project
+            Glasswing), which contributed dozens of confirmed CVEs to Firefox
+            releases in Q1 2026.
+          </p>
+        </div>
+
+        <div class="callout methodology">
+          <strong>Measurement note:</strong> This analysis uses
+          <code>datePublished</code> from CVE records, which reflects when the
+          CVE was published to cvelistV5 — not necessarily when the
+          vulnerability was discovered or disclosed. Some of the observed
+          growth, particularly from GHSA and VulnCheck, includes backfill of
+          previously-known vulnerabilities now receiving CVE IDs for the first
+          time. The true rate of <em>newly discovered</em> vulnerabilities is
+          growing more slowly than these publication counts suggest.
+        </div>
+      </div>
+
+      <!-- Daily Publication Chart -->
+      <div class="section">
+        <h2>Daily CVE Publications — Jan through Apr 2026</h2>
+        <div class="chart-container">
+          <canvas id="dailyChart" height="280"></canvas>
+        </div>
+        <p class="uncertainty-note">
+          Red markers indicate the three outlier spike days (Mar 25, Mar 5, Apr
+          8). Dashed line shows the daily mean (163 CVEs/day). Weekend days
+          visible as recurring dips.
+        </p>
+      </div>
+
+      <!-- Monthly Comparison Chart + Table -->
+      <div class="section">
+        <h2>Monthly Actuals vs. February Forecast</h2>
+        <div class="chart-container">
+          <canvas id="monthlyChart" height="240"></canvas>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Actual</th>
+              <th>Feb Forecast (Avg Case)</th>
+              <th>Delta</th>
+              <th>% Difference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>January 2026</td>
+              <td><strong>4,283</strong></td>
+              <td>3,338</td>
+              <td class="positive">+945</td>
+              <td class="positive">+28.3%</td>
+            </tr>
+            <tr>
+              <td>February 2026</td>
+              <td><strong>4,420</strong></td>
+              <td>3,320</td>
+              <td class="positive">+1,100</td>
+              <td class="positive">+33.1%</td>
+            </tr>
+            <tr class="highlight-row">
+              <td>March 2026</td>
+              <td><strong>5,930</strong></td>
+              <td>3,651</td>
+              <td class="positive">+2,279</td>
+              <td class="positive">+62.4%</td>
+            </tr>
+            <tr class="highlight-row">
+              <td>April 2026</td>
+              <td><strong>5,660</strong></td>
+              <td>3,564</td>
+              <td class="positive">+2,096</td>
+              <td class="positive">+58.8%</td>
+            </tr>
+            <tr style="background: #f8f8f8; font-weight: 600">
+              <td>Jan–Apr Total</td>
+              <td>20,293</td>
+              <td>13,873</td>
+              <td class="positive">+6,420</td>
+              <td class="positive">+46.3%</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="callout">
+          <strong>Key Insight:</strong> The forecast divergence
+          <em>widened</em> sharply in March–April, suggesting a structural
+          change rather than random variance. The February model's training data
+          did not capture the CNA operational expansions that began in late
+          2025.
+        </div>
+      </div>
+
+      <!-- CNA Growth Chart + Table -->
+      <div class="section">
+        <h2>Who Grew the Most — CNA Year-over-Year (Jan–Apr)</h2>
+        <p
+          style="margin-bottom: 0.5rem; color: var(--muted); font-size: 0.85rem"
+        >
+          Comparing Jan–Apr 2025 vs. Jan–Apr 2026 publication counts by CNA
+          shortName.
+        </p>
+        <div class="chart-container">
+          <canvas id="cnaChart" height="300"></canvas>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>CNA</th>
+              <th>2025</th>
+              <th>2026</th>
+              <th>Change</th>
+              <th>YoY %</th>
+              <th>Context</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>GitHub_M</strong> (GHSA)</td>
+              <td>785</td>
+              <td>4,313</td>
+              <td class="positive">+3,528</td>
+              <td class="positive">+449%</td>
+              <td>
+                <span class="badge badge-new">Scaled Operations</span> Expanded
+                curation team + backfilling CVE IDs for existing GHSA-only
+                advisories
+              </td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>VulnCheck</strong></td>
+              <td>26</td>
+              <td>837</td>
+              <td class="positive">+811</td>
+              <td class="positive">+3,119%*</td>
+              <td>
+                <span class="badge badge-new">CNA of Last Resort</span>
+                Assigning IDs to unowned vulnerabilities in the backlog
+              </td>
+            </tr>
+            <tr>
+              <td><strong>VulDB</strong></td>
+              <td>1,419</td>
+              <td>2,210</td>
+              <td class="positive">+791</td>
+              <td class="positive">+56%</td>
+              <td>Steady growth in community-sourced disclosures</td>
+            </tr>
+            <tr>
+              <td><strong>Chrome</strong></td>
+              <td>52</td>
+              <td>252</td>
+              <td class="positive">+200</td>
+              <td class="positive">+385%*</td>
+              <td>Increased Chromium/V8 disclosure cadence</td>
+            </tr>
+            <tr>
+              <td><strong>Linux</strong></td>
+              <td>804</td>
+              <td>1,022</td>
+              <td class="positive">+218</td>
+              <td class="positive">+27%</td>
+              <td>Kernel CNA continues steady growth</td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>Mozilla</strong></td>
+              <td>73</td>
+              <td>176</td>
+              <td class="positive">+103</td>
+              <td class="positive">+141%</td>
+              <td>
+                <span class="badge badge-new">AI-Assisted Discovery</span>
+                Massive spike due to Anthropic's Claude models autonomously
+                finding bugs (Project Glasswing)
+              </td>
+            </tr>
+            <tr>
+              <td><strong>GitLab</strong></td>
+              <td>55</td>
+              <td>146</td>
+              <td class="positive">+91</td>
+              <td class="positive">+165%</td>
+              <td>More aggressive patch-and-publish cycle</td>
+            </tr>
+            <tr>
+              <td><strong>Cisco</strong></td>
+              <td>62</td>
+              <td>146</td>
+              <td class="positive">+84</td>
+              <td class="positive">+135%</td>
+              <td>Advisory cadence appears to have shifted</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="uncertainty-note">
+          * Small-base percentages (VulnCheck from 26, Chrome from 52) are
+          visually dramatic but reflect a single quarter's ramp from a near-zero
+          baseline. These growth rates are not expected to persist at this
+          magnitude.
+        </p>
+
+        <div class="callout">
+          <strong>The GHSA Effect:</strong> GitHub's security advisory program
+          operates as a semi-curated editorial process: researchers and
+          maintainers submit advisories, GitHub's curation team reviews them,
+          and qualifying entries receive CVE IDs. The 449% growth reflects both
+          an expanded curation team and a deliberate effort to assign CVE IDs to
+          advisories that previously existed only with GHSA identifiers. This is
+          a <strong>cataloging expansion</strong> — increased visibility into
+          existing open-source vulnerabilities — not evidence that open-source
+          software suddenly became less secure.
+        </div>
+
+        <div class="callout methodology">
+          <strong>The AI Discovery Effect:</strong> Mozilla's 141%
+          year-over-year increase is a leading indicator of frontier AI models
+          acting as defensive security tools. Anthropic's Claude Opus 4.6
+          autonomously discovered 22 vulnerabilities that were patched in
+          Firefox 148, and the newer Claude Mythos Preview identified 271 legacy
+          bugs and vulnerabilities patched in Firefox 150 (April 2026) as part
+          of <strong>Project Glasswing</strong> — a joint Mozilla–Anthropic
+          initiative to apply large language models to systematic codebase
+          auditing. VulnCheck has tracked 40 CVEs explicitly credited to
+          Anthropic researchers so far in 2026, with the vast majority (28)
+          belonging to Firefox. While AI-discovered CVEs remain a small fraction
+          of total volume today, the trajectory suggests this will become a
+          structurally significant source of new disclosures in H2 2026 and
+          beyond.
+        </div>
+      </div>
+
+      <!-- Decliners -->
+      <div class="section">
+        <h2>Who Shrank — Notable CNA Declines</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>CNA</th>
+              <th>2025</th>
+              <th>2026</th>
+              <th>Change</th>
+              <th>YoY %</th>
+              <th>Possible Explanation (Unconfirmed)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Patchstack</strong></td>
+              <td>3,219</td>
+              <td>1,828</td>
+              <td class="negative">−1,391</td>
+              <td class="negative">−43%</td>
+              <td>
+                <span class="badge badge-decline">Volume Change</span> Reduced
+                WordPress plugin disclosure volume; root cause unclear — may
+                reflect process changes, resource constraints, or shifting
+                researcher incentives
+              </td>
+            </tr>
+            <tr>
+              <td><strong>MITRE</strong></td>
+              <td>1,823</td>
+              <td>1,293</td>
+              <td class="negative">−530</td>
+              <td class="negative">−29%</td>
+              <td>
+                As the CVE Program Secretariat and CNA of Last Resort, MITRE's
+                volume naturally declines as new product-specific CNAs (400+ now
+                active) assign their own IDs; VulnCheck also absorbing some
+                last-resort function
+              </td>
+            </tr>
+            <tr>
+              <td><strong>@huntr_ai</strong></td>
+              <td>316</td>
+              <td>29</td>
+              <td class="negative">−287</td>
+              <td class="negative">−91%</td>
+              <td>
+                <span class="badge badge-decline">Apparent Pause</span>
+                Significant reduction in output; operational status unconfirmed
+              </td>
+            </tr>
+            <tr>
+              <td><strong>WPScan</strong></td>
+              <td>238</td>
+              <td>68</td>
+              <td class="negative">−170</td>
+              <td class="negative">−71%</td>
+              <td>WordPress vulnerability scanning market consolidation</td>
+            </tr>
+            <tr>
+              <td><strong>Siemens</strong></td>
+              <td>125</td>
+              <td>29</td>
+              <td class="negative">−96</td>
+              <td class="negative">−77%</td>
+              <td>
+                Possible quarterly batch pending — Siemens historically
+                publishes in concentrated cadences
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Apple</strong></td>
+              <td>274</td>
+              <td>185</td>
+              <td class="negative">−89</td>
+              <td class="negative">−32%</td>
+              <td>
+                Fewer major OS releases in Q1; historically back-weighted toward
+                Q3
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="uncertainty-note">
+          Decline explanations are editorial hypotheses based on observable
+          patterns, not confirmed by the CNAs. Actual reasons may differ.
+        </p>
+
+        <div class="callout">
+          <strong>Net Effect:</strong> The decline in Patchstack (−1,391) and
+          MITRE (−530) is more than offset by GHSA (+3,528) and VulnCheck
+          (+811). The ecosystem is not producing fewer disclosures — CVE
+          assignment responsibility is redistributing from centralized
+          authorities to specialized, higher-volume CNAs.
+        </div>
+      </div>
+
+      <!-- Outlier Days -->
+      <div class="section">
+        <h2>Outlier Spike Days — What Happened</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>CVEs Published</th>
+              <th>Z-Score</th>
+              <th>Primary Drivers</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="highlight-row">
+              <td><strong>March 25</strong> (Tue)</td>
+              <td>619</td>
+              <td><span class="badge badge-spike">+3.81σ</span></td>
+              <td>
+                Patchstack (248) + Linux kernel (116) + Apple (87) — coordinated
+                WordPress plugin batch + kernel stable release + Apple security
+                update
+              </td>
+            </tr>
+            <tr>
+              <td><strong>March 5</strong> (Wed)</td>
+              <td>490</td>
+              <td><span class="badge badge-spike">+2.72σ</span></td>
+              <td>
+                Patchstack (268) + VulnCheck (49) — large WordPress plugin
+                disclosure batch
+              </td>
+            </tr>
+            <tr>
+              <td><strong>April 8</strong> (Tue)</td>
+              <td>485</td>
+              <td><span class="badge badge-spike">+2.68σ</span></td>
+              <td>
+                Patchstack (164) + GHSA (69) + Chrome (60) — April Patch Tuesday
+                + Chrome stable channel update
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="uncertainty-note">
+          Z-scores assume approximate normality in daily counts. Daily CVE
+          counts are right-skewed and zero-bounded, meaning these z-scores
+          likely <em>understate</em> how statistically unusual these days are
+          relative to the true distribution. All three outlier days fall on
+          Tuesday or Wednesday, consistent with the observation that ~43% of CVE
+          publications occur on these two days.
+        </p>
+      </div>
+
+      <!-- Updated Forecast -->
+      <div class="section">
+        <h2>Revised Forecast — May through December 2026</h2>
+        <div class="callout methodology">
+          <strong>Methodology & Limitations:</strong> AutoARIMA model retrained
+          on daily CVE counts from 2020-01-01 through 2026-04-30. This model
+          assumes the current publication regime persists — if GHSA's backfill
+          campaign saturates or VulnCheck's last-resort pipeline plateaus,
+          actual volumes could be materially lower. The point estimates below
+          should be interpreted as
+          <strong>scenario projections under current conditions</strong>, not
+          high-confidence predictions. The 80% prediction interval for the full
+          year spans approximately 55,000–80,000 CVEs.
+        </div>
+        <div class="chart-container">
+          <canvas id="forecastChart" height="260"></canvas>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Revised Projection</th>
+              <th>February Forecast</th>
+              <th>Delta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>May 2026</td>
+              <td><strong>5,807</strong></td>
+              <td>3,782</td>
+              <td class="positive">+2,025</td>
+            </tr>
+            <tr>
+              <td>June 2026</td>
+              <td><strong>5,655</strong></td>
+              <td>3,655</td>
+              <td class="positive">+2,000</td>
+            </tr>
+            <tr>
+              <td>July 2026</td>
+              <td><strong>5,912</strong></td>
+              <td>3,821</td>
+              <td class="positive">+2,091</td>
+            </tr>
+            <tr>
+              <td>August 2026</td>
+              <td><strong>5,981</strong></td>
+              <td>3,750</td>
+              <td class="positive">+2,231</td>
+            </tr>
+            <tr>
+              <td>September 2026</td>
+              <td><strong>5,854</strong></td>
+              <td>3,690</td>
+              <td class="positive">+2,164</td>
+            </tr>
+            <tr>
+              <td>October 2026</td>
+              <td><strong>6,117</strong></td>
+              <td>3,790</td>
+              <td class="positive">+2,327</td>
+            </tr>
+            <tr>
+              <td>November 2026</td>
+              <td><strong>5,986</strong></td>
+              <td>3,520</td>
+              <td class="positive">+2,466</td>
+            </tr>
+            <tr>
+              <td>December 2026</td>
+              <td><strong>6,254</strong></td>
+              <td>3,876</td>
+              <td class="positive">+2,378</td>
+            </tr>
+            <tr style="background: #f0f0f0; font-weight: 700">
+              <td>Full Year 2026</td>
+              <td>~67,900 (80% CI: 55K–80K)</td>
+              <td>43,757</td>
+              <td class="positive">+24,100 (+55%)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Historical Context -->
+      <div class="section">
+        <h2>Historical Context — Annual CVE Growth</h2>
+        <div class="chart-container">
+          <canvas id="annualChart" height="240"></canvas>
+        </div>
+        <div class="callout">
+          <strong>Trajectory:</strong> If the revised projection holds, 2026
+          will be the fastest growth year since the CNA program expanded in
+          2024. The CVE ecosystem crossed 1,000 published CVEs/week for the
+          first time in March 2026 and hasn't dropped below that pace since.
+          However, much of this growth reflects improved
+          <em>cataloging coverage</em> rather than a proportional increase in
+          exploitable risk.
+        </div>
+      </div>
+
+      <!-- Conclusion -->
+      <div class="section">
+        <h2>Summary & Implications</h2>
+        <div class="narrative">
+          <p>
+            <strong
+              >The February 2026 forecast no longer reflects current CNA
+              dynamics</strong
+            >
+            and requires revision. It was calibrated against 2024–2025 behavior
+            that has since been superseded by two structural shifts in how CVEs
+            are assigned:
+          </p>
+
+          <ol style="margin: 1rem 0 1rem 1.5rem; line-height: 2">
+            <li>
+              <strong>GitHub Security Advisories (GHSA)</strong> expanded its
+              curation team and launched a backfill campaign to assign CVE IDs
+              to existing GHSA-only records. This is a semi-curated editorial
+              process — not fully automated — that went from modest contributor
+              (785 Jan–Apr 2025) to the ecosystem's largest single publisher
+              (4,313 Jan–Apr 2026).
+            </li>
+            <li>
+              <strong>VulnCheck's CNA of Last Resort role</strong> filled a gap
+              left by MITRE's reduced capacity, absorbing previously-unassigned
+              vulnerabilities into the CVE catalog at scale (26 → 837).
+            </li>
+          </ol>
+
+          <p>
+            This is not a "vulnerability explosion" in the traditional sense.
+            The underlying rate of software defects has not increased 46% in
+            four months. Rather, the CVE catalog is expanding its coverage —
+            particularly for open-source library vulnerabilities that previously
+            went untracked or existed only in platform-specific databases.
+            Whether this represents the CVE system "catching up" to reality or a
+            dilution of signal quality is a matter of ongoing debate within the
+            CNA community.
+          </p>
+
+          <p>
+            <strong>For vulnerability management teams:</strong> Plan for
+            5,800–6,200 new CVEs per month for the remainder of 2026, but
+            recognize that raw volume alone is a poor proxy for risk.
+            Prioritization should lean heavily on exploitability signals (EPSS
+            scores, CISA KEV membership) and affected-product relevance rather
+            than CVE count. Teams relying on NVD-enriched data should monitor
+            whether NVD analysis throughput is keeping pace with this
+            publication volume — enrichment lag creates blind spots. Consider
+            filtering by CNA source when triaging: a GHSA advisory for a
+            transitive npm dependency carries different operational urgency than
+            a Chrome or Linux kernel CVE.
+          </p>
+        </div>
+      </div>
+
+      <!-- Appendix: Day of Week -->
+      <div class="section" style="opacity: 0.9">
+        <h2>Appendix: Publication Cadence</h2>
+        <div class="two-col">
+          <div>
+            <canvas id="dowChart" height="200"></canvas>
+          </div>
+          <div>
+            <p style="margin-top: 1rem">
+              <strong>Observations (Jan–Apr 2026):</strong>
+            </p>
+            <ul
+              style="margin-top: 0.5rem; padding-left: 1.5rem; line-height: 2"
+            >
+              <li>
+                Tuesday–Wednesday: <strong>42.8%</strong> of all publications
+              </li>
+              <li>
+                Weekends: only <strong>8.1%</strong> — CNA operations run on
+                business-day schedules
+              </li>
+              <li>
+                Weekly average: <strong>1,085 CVEs/week</strong> (std: 346)
+              </li>
+              <li>Peak week: <strong>1,608 CVEs</strong></li>
+              <li>
+                "Patch Tuesday" effect visible in the Tuesday concentration
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p>
+          Generated by CVEForecast on May 5, 2026 &bull; Model: AutoARIMA (Darts
+          0.43) trained on daily publication counts 2020–2026 &bull; Data
+          source: CVE Program cvelistV5 repository
+        </p>
+        <p style="margin-top: 0.3rem">
+          Original forecast:
+          <a
+            href="https://www.first.org/blog/20260211-vulnerability-forecast-2026"
+            >FIRST.org, February 11, 2026</a
+          >
+        </p>
+        <p style="margin-top: 0.5rem">
+          Jerry Gamblin &bull; github.com/jgamblin/CVEForecast
+        </p>
+        <div
+          style="
+            margin-top: 1.5rem;
+            text-align: left;
+            padding: 1rem;
+            background: #f1f3f5;
+            border-radius: 6px;
+            font-size: 0.8rem;
+          "
+        >
+          <strong>References:</strong>
+          <ul
+            style="
+              margin-top: 0.5rem;
+              padding-left: 1.5rem;
+              list-style: disc;
+              line-height: 1.8;
+            "
+          >
+            <li>
+              <a
+                href="https://www.first.org/blog/20260211-vulnerability-forecast-2026"
+                >FIRST.org: 2026 Vulnerability Forecast (February 11, 2026)</a
+              >
+            </li>
+            <li>
+              <a href="https://red.anthropic.com/2026/mythos-preview/"
+                >Anthropic Red Team: Assessing Claude Mythos Preview</a
+              >
+            </li>
+            <li>
+              <a href="https://www.vulncheck.com/blog/anthropic-glasswing-cves"
+                >VulnCheck: Tracking CVEs Attributed to Anthropic (Project
+                Glasswing)</a
+              >
+            </li>
+          </ul>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // --- Chart Data ---
+      const dailyLabels = [
+        "2026-01-01",
+        "2026-01-02",
+        "2026-01-03",
+        "2026-01-04",
+        "2026-01-05",
+        "2026-01-06",
+        "2026-01-07",
+        "2026-01-08",
+        "2026-01-09",
+        "2026-01-10",
+        "2026-01-11",
+        "2026-01-12",
+        "2026-01-13",
+        "2026-01-14",
+        "2026-01-15",
+        "2026-01-16",
+        "2026-01-17",
+        "2026-01-18",
+        "2026-01-19",
+        "2026-01-20",
+        "2026-01-21",
+        "2026-01-22",
+        "2026-01-23",
+        "2026-01-24",
+        "2026-01-25",
+        "2026-01-26",
+        "2026-01-27",
+        "2026-01-28",
+        "2026-01-29",
+        "2026-01-30",
+        "2026-01-31",
+        "2026-02-01",
+        "2026-02-02",
+        "2026-02-03",
+        "2026-02-04",
+        "2026-02-05",
+        "2026-02-06",
+        "2026-02-07",
+        "2026-02-08",
+        "2026-02-09",
+        "2026-02-10",
+        "2026-02-11",
+        "2026-02-12",
+        "2026-02-13",
+        "2026-02-14",
+        "2026-02-15",
+        "2026-02-16",
+        "2026-02-17",
+        "2026-02-18",
+        "2026-02-19",
+        "2026-02-20",
+        "2026-02-21",
+        "2026-02-22",
+        "2026-02-23",
+        "2026-02-24",
+        "2026-02-25",
+        "2026-02-26",
+        "2026-02-27",
+        "2026-02-28",
+        "2026-03-01",
+        "2026-03-02",
+        "2026-03-03",
+        "2026-03-04",
+        "2026-03-05",
+        "2026-03-06",
+        "2026-03-07",
+        "2026-03-08",
+        "2026-03-09",
+        "2026-03-10",
+        "2026-03-11",
+        "2026-03-12",
+        "2026-03-13",
+        "2026-03-14",
+        "2026-03-15",
+        "2026-03-16",
+        "2026-03-17",
+        "2026-03-18",
+        "2026-03-19",
+        "2026-03-20",
+        "2026-03-21",
+        "2026-03-22",
+        "2026-03-23",
+        "2026-03-24",
+        "2026-03-25",
+        "2026-03-26",
+        "2026-03-27",
+        "2026-03-28",
+        "2026-03-29",
+        "2026-03-30",
+        "2026-03-31",
+        "2026-04-01",
+        "2026-04-02",
+        "2026-04-03",
+        "2026-04-04",
+        "2026-04-05",
+        "2026-04-06",
+        "2026-04-07",
+        "2026-04-08",
+        "2026-04-09",
+        "2026-04-10",
+        "2026-04-11",
+        "2026-04-12",
+        "2026-04-13",
+        "2026-04-14",
+        "2026-04-15",
+        "2026-04-16",
+        "2026-04-17",
+        "2026-04-18",
+        "2026-04-19",
+        "2026-04-20",
+        "2026-04-21",
+        "2026-04-22",
+        "2026-04-23",
+        "2026-04-24",
+        "2026-04-25",
+        "2026-04-26",
+        "2026-04-27",
+        "2026-04-28",
+        "2026-04-29",
+        "2026-04-30",
+      ];
+      const dailyValues = [
+        35, 102, 10, 9, 143, 164, 204, 189, 124, 74, 13, 81, 370, 180, 129, 113,
+        39, 29, 113, 233, 77, 442, 237, 65, 25, 108, 172, 174, 99, 78, 45, 3,
+        145, 286, 230, 86, 159, 62, 75, 166, 272, 249, 90, 61, 163, 20, 71, 91,
+        214, 361, 350, 65, 41, 96, 220, 236, 170, 172, 16, 20, 216, 121, 194,
+        488, 146, 110, 81, 154, 346, 311, 152, 288, 7, 41, 187, 113, 191, 241,
+        301, 122, 43, 188, 231, 615, 265, 230, 32, 47, 127, 269, 231, 246, 211,
+        27, 69, 256, 272, 484, 266, 211, 39, 37, 220, 402, 193, 123, 166, 32,
+        25, 179, 352, 324, 183, 275, 40, 52, 196, 219, 112, 163,
+      ];
+      const dailyMean = 162.7;
+
+      // Outlier indices (0-based): Mar 25 = index 83, Mar 5 = index 63, Apr 8 = index 97
+      const outlierIndices = [83, 63, 97];
+
+      // --- 1. Daily Publication Chart ---
+      const dailyCtx = document.getElementById("dailyChart").getContext("2d");
+      const dailyPointColors = dailyValues.map((v, i) =>
+        outlierIndices.includes(i) ? "#d63031" : "rgba(15, 52, 96, 0.6)",
+      );
+      const dailyPointRadius = dailyValues.map((v, i) =>
+        outlierIndices.includes(i) ? 6 : 0,
+      );
+
+      new Chart(dailyCtx, {
+        type: "line",
+        data: {
+          labels: dailyLabels.map((d) => {
+            const dt = new Date(d);
+            return dt.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            });
+          }),
+          datasets: [
+            {
+              label: "CVEs Published",
+              data: dailyValues,
+              borderColor: "rgba(15, 52, 96, 0.7)",
+              backgroundColor: "rgba(15, 52, 96, 0.1)",
+              fill: true,
+              tension: 0.3,
+              pointBackgroundColor: dailyPointColors,
+              pointRadius: dailyPointRadius,
+              pointHoverRadius: 5,
+              borderWidth: 1.5,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            annotation: {
+              annotations: {
+                meanLine: {
+                  type: "line",
+                  yMin: dailyMean,
+                  yMax: dailyMean,
+                  borderColor: "rgba(233, 69, 96, 0.5)",
+                  borderWidth: 2,
+                  borderDash: [6, 4],
+                  label: {
+                    display: true,
+                    content: "Daily Mean: 163",
+                    position: "start",
+                    backgroundColor: "rgba(233, 69, 96, 0.8)",
+                    font: { size: 11 },
+                  },
+                },
+              },
+            },
+          },
+          scales: {
+            x: { ticks: { maxTicksLimit: 12, font: { size: 11 } } },
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "CVEs / Day" },
+            },
+          },
+        },
+      });
+
+      // --- 2. Monthly Comparison Chart ---
+      const monthlyCtx = document
+        .getElementById("monthlyChart")
+        .getContext("2d");
+      new Chart(monthlyCtx, {
+        type: "bar",
+        data: {
+          labels: ["January", "February", "March", "April"],
+          datasets: [
+            {
+              label: "Actual",
+              data: [4283, 4420, 5930, 5660],
+              backgroundColor: "rgba(233, 69, 96, 0.8)",
+              borderRadius: 4,
+            },
+            {
+              label: "Feb Forecast (Avg Case)",
+              data: [3338, 3320, 3651, 3564],
+              backgroundColor: "rgba(178, 190, 195, 0.7)",
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "top" },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "CVEs Published" },
+            },
+          },
+        },
+      });
+
+      // --- 3. CNA Growth/Decline Chart (Horizontal Bar) ---
+      const cnaCtx = document.getElementById("cnaChart").getContext("2d");
+      const cnaLabels = [
+        "GHSA (GitHub_M)",
+        "VulnCheck",
+        "VulDB",
+        "Linux",
+        "Chrome",
+        "Mozilla",
+        "GitLab",
+        "Cisco",
+        "Apple",
+        "Siemens",
+        "WPScan",
+        "@huntr_ai",
+        "MITRE",
+        "Patchstack",
+      ];
+      const cnaChanges = [
+        3528, 811, 791, 218, 200, 103, 91, 84, -89, -96, -170, -287, -530,
+        -1391,
+      ];
+      const cnaColors = cnaChanges.map((v) =>
+        v >= 0 ? "rgba(233, 69, 96, 0.75)" : "rgba(0, 184, 148, 0.75)",
+      );
+
+      new Chart(cnaCtx, {
+        type: "bar",
+        data: {
+          labels: cnaLabels,
+          datasets: [
+            {
+              label: "Change (Jan–Apr 2025 → 2026)",
+              data: cnaChanges,
+              backgroundColor: cnaColors,
+              borderRadius: 3,
+            },
+          ],
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            x: {
+              title: { display: true, text: "CVE Count Change (YoY)" },
+              grid: {
+                color: (ctx) => (ctx.tick.value === 0 ? "#2d3436" : "#dfe6e9"),
+              },
+            },
+          },
+        },
+      });
+
+      // --- 4. Forecast Comparison Chart ---
+      const forecastCtx = document
+        .getElementById("forecastChart")
+        .getContext("2d");
+      const allMonths = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+      const actuals = [
+        4283,
+        4420,
+        5930,
+        5660,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+      ];
+      const revised = [
+        4283, 4420, 5930, 5660, 5807, 5655, 5912, 5981, 5854, 6117, 5986, 6254,
+      ];
+      const febForecast = [
+        3338, 3320, 3651, 3564, 3782, 3655, 3821, 3750, 3690, 3790, 3520, 3876,
+      ];
+
+      new Chart(forecastCtx, {
+        type: "line",
+        data: {
+          labels: allMonths,
+          datasets: [
+            {
+              label: "Actuals (Jan–Apr)",
+              data: actuals,
+              borderColor: "#d63031",
+              backgroundColor: "#d63031",
+              pointRadius: 5,
+              pointStyle: "circle",
+              borderWidth: 3,
+              spanGaps: false,
+            },
+            {
+              label: "Revised Projection (May–Dec)",
+              data: [
+                null,
+                null,
+                null,
+                5660,
+                5807,
+                5655,
+                5912,
+                5981,
+                5854,
+                6117,
+                5986,
+                6254,
+              ],
+              borderColor: "#e94560",
+              borderDash: [6, 4],
+              pointRadius: 4,
+              pointStyle: "triangle",
+              borderWidth: 2,
+              spanGaps: false,
+            },
+            {
+              label: "February Forecast (Avg Case)",
+              data: febForecast,
+              borderColor: "#b2bec3",
+              backgroundColor: "rgba(178,190,195,0.15)",
+              fill: true,
+              pointRadius: 3,
+              borderWidth: 2,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: "top" },
+            annotation: {
+              annotations: {
+                cutoff: {
+                  type: "line",
+                  xMin: 3.5,
+                  xMax: 3.5,
+                  borderColor: "rgba(0,0,0,0.2)",
+                  borderWidth: 1,
+                  borderDash: [4, 4],
+                  label: {
+                    display: true,
+                    content: "Today",
+                    position: "start",
+                    backgroundColor: "rgba(0,0,0,0.6)",
+                    font: { size: 10 },
+                  },
+                },
+              },
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              min: 2500,
+              title: { display: true, text: "CVEs / Month" },
+            },
+          },
+        },
+      });
+
+      // --- 5. Annual Growth Chart ---
+      const annualCtx = document.getElementById("annualChart").getContext("2d");
+      new Chart(annualCtx, {
+        type: "bar",
+        data: {
+          labels: [
+            "2020",
+            "2021",
+            "2022",
+            "2023",
+            "2024",
+            "2025",
+            "2026 (proj)",
+          ],
+          datasets: [
+            {
+              label: "Total CVEs Published",
+              data: [14287, 19862, 24647, 28313, 39724, 47822, 67900],
+              backgroundColor: [
+                "#0f3460",
+                "#0f3460",
+                "#0f3460",
+                "#0f3460",
+                "#0f3460",
+                "#0f3460",
+                "rgba(233,69,96,0.8)",
+              ],
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "CVEs Published" },
+            },
+          },
+        },
+      });
+
+      // --- 6. Day of Week Chart ---
+      const dowCtx = document.getElementById("dowChart").getContext("2d");
+      new Chart(dowCtx, {
+        type: "bar",
+        data: {
+          labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+          datasets: [
+            {
+              label: "CVEs Published (Jan–Apr 2026)",
+              data: [2646, 4133, 4219, 3728, 3224, 948, 630],
+              backgroundColor: [
+                "#0f3460",
+                "#e94560",
+                "#e94560",
+                "#0f3460",
+                "#0f3460",
+                "#b2bec3",
+                "#b2bec3",
+              ],
+              borderRadius: 4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: { display: true, text: "Total CVEs" },
+            },
+          },
+        },
+      });
+    </script>
+  </body>
+</html>
