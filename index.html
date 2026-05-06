@@ -1083,6 +1083,71 @@
     </div>
 
     <script>
+      // --- Design System ---
+      const palette = {
+        primary: "#2d3047",
+        primaryLight: "rgba(45, 48, 71, 0.35)",
+        accent: "#00b4d8",
+        accentSoft: "rgba(0, 180, 216, 0.15)",
+        warm: "#e76f51",
+        warmSoft: "rgba(231, 111, 81, 0.12)",
+        slate: "rgba(45, 48, 71, 0.6)",
+        muted: "rgba(150, 157, 172, 0.7)",
+        gridLine: "rgba(0, 0, 0, 0.05)",
+        zeroLine: "rgba(0, 0, 0, 0.15)",
+        baseline: "#bcc3ce",
+        baselineFill: "rgba(188, 195, 206, 0.12)",
+      };
+
+      const fmtNum = (v) =>
+        v == null ? "" : Number(v).toLocaleString("en-US");
+
+      const cleanScales = (opts = {}) => ({
+        x: {
+          border: { display: false },
+          grid: {
+            color: palette.gridLine,
+            drawBorder: false,
+            borderDash: [3, 3],
+          },
+          ticks: {
+            font: {
+              size: 11,
+              family: "-apple-system, BlinkMacSystemFont, sans-serif",
+            },
+            color: "#6b7280",
+            ...(opts.x || {}),
+          },
+        },
+        y: {
+          border: { display: false },
+          grid: {
+            color: palette.gridLine,
+            drawBorder: false,
+            borderDash: [3, 3],
+          },
+          ticks: {
+            font: { size: 11 },
+            color: "#6b7280",
+            callback: (v) => fmtNum(v),
+          },
+          ...(opts.y || {}),
+        },
+      });
+
+      const tooltipConfig = {
+        backgroundColor: "rgba(30, 32, 48, 0.92)",
+        titleFont: { size: 12, weight: "600" },
+        bodyFont: { size: 12 },
+        padding: 10,
+        cornerRadius: 6,
+        boxPadding: 4,
+        callbacks: {
+          label: (ctx) =>
+            `${ctx.dataset.label}: ${fmtNum(ctx.parsed.y ?? ctx.parsed.x)}`,
+        },
+      };
+
       // --- Chart Data ---
       const dailyLabels = [
         "2026-01-01",
@@ -1143,7 +1208,6 @@
         "2026-02-25",
         "2026-02-26",
         "2026-02-27",
-        "2026-02-28",
         "2026-03-01",
         "2026-03-02",
         "2026-03-03",
@@ -1217,19 +1281,17 @@
         25, 179, 352, 324, 183, 275, 40, 52, 196, 219, 112, 163,
       ];
       const dailyMean = 162.7;
-
-      // Outlier indices (0-based): Mar 25 = index 83, Mar 5 = index 63, Apr 8 = index 97
       const outlierIndices = [83, 63, 97];
+
+      // Compute 7-day moving average
+      const movingAvg7 = dailyValues.map((_, i, arr) => {
+        if (i < 6) return null;
+        const window = arr.slice(i - 6, i + 1);
+        return Math.round(window.reduce((a, b) => a + b, 0) / 7);
+      });
 
       // --- 1. Daily Publication Chart ---
       const dailyCtx = document.getElementById("dailyChart").getContext("2d");
-      const dailyPointColors = dailyValues.map((v, i) =>
-        outlierIndices.includes(i) ? "#d63031" : "rgba(15, 52, 96, 0.6)",
-      );
-      const dailyPointRadius = dailyValues.map((v, i) =>
-        outlierIndices.includes(i) ? 6 : 0,
-      );
-
       new Chart(dailyCtx, {
         type: "line",
         data: {
@@ -1242,50 +1304,89 @@
           }),
           datasets: [
             {
-              label: "CVEs Published",
+              label: "Daily Count",
               data: dailyValues,
-              borderColor: "rgba(15, 52, 96, 0.7)",
-              backgroundColor: "rgba(15, 52, 96, 0.1)",
-              fill: true,
-              tension: 0.3,
-              pointBackgroundColor: dailyPointColors,
-              pointRadius: dailyPointRadius,
-              pointHoverRadius: 5,
-              borderWidth: 1.5,
+              borderColor: palette.primaryLight,
+              backgroundColor: "transparent",
+              fill: false,
+              tension: 0.1,
+              pointBackgroundColor: dailyValues.map((_, i) =>
+                outlierIndices.includes(i) ? palette.warm : "transparent",
+              ),
+              pointBorderColor: dailyValues.map((_, i) =>
+                outlierIndices.includes(i) ? palette.warm : "transparent",
+              ),
+              pointRadius: dailyValues.map((_, i) =>
+                outlierIndices.includes(i) ? 5 : 0,
+              ),
+              pointHoverRadius: 4,
+              borderWidth: 1,
+              order: 2,
+            },
+            {
+              label: "7-Day Moving Average",
+              data: movingAvg7,
+              borderColor: palette.accent,
+              backgroundColor: "transparent",
+              fill: false,
+              tension: 0.4,
+              pointRadius: 0,
+              pointHoverRadius: 4,
+              borderWidth: 2.5,
+              order: 1,
             },
           ],
         },
         options: {
           responsive: true,
+          interaction: { mode: "index", intersect: false },
           plugins: {
-            legend: { display: false },
+            legend: {
+              position: "top",
+              align: "end",
+              labels: {
+                boxWidth: 12,
+                boxHeight: 2,
+                useBorderRadius: true,
+                borderRadius: 1,
+                font: { size: 11 },
+                padding: 16,
+              },
+            },
+            tooltip: tooltipConfig,
             annotation: {
               annotations: {
                 meanLine: {
                   type: "line",
                   yMin: dailyMean,
                   yMax: dailyMean,
-                  borderColor: "rgba(233, 69, 96, 0.5)",
-                  borderWidth: 2,
+                  borderColor: "rgba(150, 157, 172, 0.5)",
+                  borderWidth: 1,
                   borderDash: [6, 4],
                   label: {
                     display: true,
-                    content: "Daily Mean: 163",
+                    content: "Mean: 163/day",
                     position: "start",
-                    backgroundColor: "rgba(233, 69, 96, 0.8)",
-                    font: { size: 11 },
+                    backgroundColor: "rgba(107, 114, 128, 0.75)",
+                    font: { size: 10, weight: "500" },
+                    padding: { top: 3, bottom: 3, left: 6, right: 6 },
+                    borderRadius: 3,
                   },
                 },
               },
             },
           },
-          scales: {
-            x: { ticks: { maxTicksLimit: 12, font: { size: 11 } } },
+          scales: cleanScales({
+            x: { maxTicksLimit: 10 },
             y: {
               beginAtZero: true,
-              title: { display: true, text: "CVEs / Day" },
+              title: {
+                display: true,
+                text: "CVEs / Day",
+                font: { size: 11, weight: "500" },
+              },
             },
-          },
+          }),
         },
       });
 
@@ -1301,28 +1402,46 @@
             {
               label: "Actual",
               data: [4283, 4420, 5930, 5660],
-              backgroundColor: "rgba(233, 69, 96, 0.8)",
-              borderRadius: 4,
+              backgroundColor: palette.primary,
+              borderRadius: 3,
+              borderSkipped: false,
             },
             {
               label: "Feb Forecast (Avg Case)",
               data: [3338, 3320, 3651, 3564],
-              backgroundColor: "rgba(178, 190, 195, 0.7)",
-              borderRadius: 4,
+              backgroundColor: palette.baseline,
+              borderRadius: 3,
+              borderSkipped: false,
             },
           ],
         },
         options: {
           responsive: true,
           plugins: {
-            legend: { position: "top" },
+            legend: {
+              position: "top",
+              align: "end",
+              labels: {
+                boxWidth: 12,
+                boxHeight: 12,
+                borderRadius: 2,
+                useBorderRadius: true,
+                font: { size: 11 },
+                padding: 16,
+              },
+            },
+            tooltip: tooltipConfig,
           },
-          scales: {
+          scales: cleanScales({
             y: {
               beginAtZero: true,
-              title: { display: true, text: "CVEs Published" },
+              title: {
+                display: true,
+                text: "CVEs Published",
+                font: { size: 11, weight: "500" },
+              },
             },
-          },
+          }),
         },
       });
 
@@ -1348,8 +1467,10 @@
         3528, 811, 791, 218, 200, 103, 91, 84, -89, -96, -170, -287, -530,
         -1391,
       ];
-      const cnaColors = cnaChanges.map((v) =>
-        v >= 0 ? "rgba(233, 69, 96, 0.75)" : "rgba(0, 184, 148, 0.75)",
+      const cnaBarColors = cnaLabels.map((label) =>
+        label === "GHSA (GitHub_M)" || label === "VulnCheck"
+          ? palette.accent
+          : palette.primary,
       );
 
       new Chart(cnaCtx, {
@@ -1360,8 +1481,9 @@
             {
               label: "Change (Jan–Apr 2025 → 2026)",
               data: cnaChanges,
-              backgroundColor: cnaColors,
-              borderRadius: 3,
+              backgroundColor: cnaBarColors,
+              borderRadius: 2,
+              borderSkipped: false,
             },
           ],
         },
@@ -1370,13 +1492,42 @@
           responsive: true,
           plugins: {
             legend: { display: false },
+            tooltip: {
+              ...tooltipConfig,
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.parsed.x;
+                  const sign = v >= 0 ? "+" : "";
+                  return `${sign}${fmtNum(v)} CVEs`;
+                },
+              },
+            },
           },
           scales: {
             x: {
-              title: { display: true, text: "CVE Count Change (YoY)" },
+              border: { display: false },
               grid: {
-                color: (ctx) => (ctx.tick.value === 0 ? "#2d3436" : "#dfe6e9"),
+                color: (ctx) =>
+                  ctx.tick.value === 0 ? palette.zeroLine : palette.gridLine,
+                drawBorder: false,
+                borderDash: [3, 3],
+                lineWidth: (ctx) => (ctx.tick.value === 0 ? 1.5 : 1),
               },
+              ticks: {
+                font: { size: 11 },
+                color: "#6b7280",
+                callback: (v) => fmtNum(v),
+              },
+              title: {
+                display: true,
+                text: "CVE Count Change (YoY)",
+                font: { size: 11, weight: "500" },
+              },
+            },
+            y: {
+              border: { display: false },
+              grid: { display: false },
+              ticks: { font: { size: 11 }, color: "#374151" },
             },
           },
         },
@@ -1429,12 +1580,13 @@
             {
               label: "Actuals (Jan–Apr)",
               data: actuals,
-              borderColor: "#d63031",
-              backgroundColor: "#d63031",
+              borderColor: palette.primary,
+              backgroundColor: palette.primary,
               pointRadius: 5,
               pointStyle: "circle",
-              borderWidth: 3,
+              borderWidth: 2.5,
               spanGaps: false,
+              order: 1,
             },
             {
               label: "Revised Projection (May–Dec)",
@@ -1452,55 +1604,80 @@
                 5986,
                 6254,
               ],
-              borderColor: "#e94560",
-              borderDash: [6, 4],
+              borderColor: palette.accent,
+              backgroundColor: palette.accentSoft,
+              fill: true,
+              borderDash: [5, 3],
               pointRadius: 4,
-              pointStyle: "triangle",
-              borderWidth: 2,
+              pointStyle: "rectRot",
+              pointBackgroundColor: palette.accent,
+              borderWidth: 2.5,
               spanGaps: false,
+              order: 2,
             },
             {
               label: "February Forecast (Avg Case)",
               data: febForecast,
-              borderColor: "#b2bec3",
-              backgroundColor: "rgba(178,190,195,0.15)",
+              borderColor: palette.baseline,
+              backgroundColor: palette.baselineFill,
               fill: true,
-              pointRadius: 3,
-              borderWidth: 2,
+              pointRadius: 0,
+              pointHoverRadius: 3,
+              borderWidth: 1.5,
+              order: 3,
             },
           ],
         },
         options: {
           responsive: true,
+          interaction: { mode: "index", intersect: false },
           plugins: {
-            legend: { position: "top" },
+            legend: {
+              position: "top",
+              align: "end",
+              labels: {
+                boxWidth: 12,
+                boxHeight: 2,
+                useBorderRadius: true,
+                borderRadius: 1,
+                font: { size: 11 },
+                padding: 16,
+              },
+            },
+            tooltip: tooltipConfig,
             annotation: {
               annotations: {
                 cutoff: {
                   type: "line",
                   xMin: 3.5,
                   xMax: 3.5,
-                  borderColor: "rgba(0,0,0,0.2)",
+                  borderColor: "rgba(0, 0, 0, 0.12)",
                   borderWidth: 1,
-                  borderDash: [4, 4],
+                  borderDash: [4, 3],
                   label: {
                     display: true,
-                    content: "Today",
+                    content: "Now",
                     position: "start",
-                    backgroundColor: "rgba(0,0,0,0.6)",
-                    font: { size: 10 },
+                    backgroundColor: "rgba(107, 114, 128, 0.7)",
+                    font: { size: 9, weight: "500" },
+                    padding: { top: 2, bottom: 2, left: 5, right: 5 },
+                    borderRadius: 3,
                   },
                 },
               },
             },
           },
-          scales: {
+          scales: cleanScales({
             y: {
               beginAtZero: false,
               min: 2500,
-              title: { display: true, text: "CVEs / Month" },
+              title: {
+                display: true,
+                text: "CVEs / Month",
+                font: { size: 11, weight: "500" },
+              },
             },
-          },
+          }),
         },
       });
 
@@ -1523,15 +1700,16 @@
               label: "Total CVEs Published",
               data: [14287, 19862, 24647, 28313, 39724, 47822, 67900],
               backgroundColor: [
-                "#0f3460",
-                "#0f3460",
-                "#0f3460",
-                "#0f3460",
-                "#0f3460",
-                "#0f3460",
-                "rgba(233,69,96,0.8)",
+                palette.primary,
+                palette.primary,
+                palette.primary,
+                palette.primary,
+                palette.primary,
+                palette.primary,
+                palette.accent,
               ],
-              borderRadius: 4,
+              borderRadius: 3,
+              borderSkipped: false,
             },
           ],
         },
@@ -1539,13 +1717,18 @@
           responsive: true,
           plugins: {
             legend: { display: false },
+            tooltip: tooltipConfig,
           },
-          scales: {
+          scales: cleanScales({
             y: {
               beginAtZero: true,
-              title: { display: true, text: "CVEs Published" },
+              title: {
+                display: true,
+                text: "CVEs Published",
+                font: { size: 11, weight: "500" },
+              },
             },
-          },
+          }),
         },
       });
 
@@ -1560,27 +1743,35 @@
               label: "CVEs Published (Jan–Apr 2026)",
               data: [2646, 4133, 4219, 3728, 3224, 948, 630],
               backgroundColor: [
-                "#0f3460",
-                "#e94560",
-                "#e94560",
-                "#0f3460",
-                "#0f3460",
-                "#b2bec3",
-                "#b2bec3",
+                palette.primary,
+                palette.accent,
+                palette.accent,
+                palette.primary,
+                palette.primary,
+                "rgba(188, 195, 206, 0.5)",
+                "rgba(188, 195, 206, 0.5)",
               ],
-              borderRadius: 4,
+              borderRadius: 3,
+              borderSkipped: false,
             },
           ],
         },
         options: {
           responsive: true,
-          plugins: { legend: { display: false } },
-          scales: {
+          plugins: {
+            legend: { display: false },
+            tooltip: tooltipConfig,
+          },
+          scales: cleanScales({
             y: {
               beginAtZero: true,
-              title: { display: true, text: "Total CVEs" },
+              title: {
+                display: true,
+                text: "Total CVEs",
+                font: { size: 11, weight: "500" },
+              },
             },
-          },
+          }),
         },
       });
     </script>
