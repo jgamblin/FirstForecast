@@ -871,6 +871,121 @@
         </div>
       </div>
 
+      <!-- Exploitability Overlay -->
+      <div class="section">
+        <h2>Exploitability Overlay — Volume vs. Actionable Burden</h2>
+        <div class="abbr-def">
+          <strong>Key terms:</strong> A CVE is classified as
+          <strong>"Actionable"</strong> if it appears in the
+          <strong>CISA KEV</strong> (Known Exploited Vulnerabilities) catalog OR
+          has an <strong>EPSS score &gt; 10%</strong>. This threshold captures
+          vulnerabilities with demonstrated or predicted real-world
+          exploitation.
+        </div>
+        <div class="narrative">
+          <p>
+            The volume growth from GitHub_M and VulnCheck raises an important
+            question:
+            <strong
+              >does this growth translate into actual patching burden?</strong
+            >
+            To answer this, we overlay exploitability signals (CISA KEV + EPSS)
+            against publication volume and forecast both independently through
+            December 2026.
+          </p>
+        </div>
+        <div class="chart-container" style="text-align: center">
+          <img
+            src="exploitability_overlay.png"
+            alt="Exploitability Overlay: Forecasted Volume vs. Actionable Burden for GitHub_M and VulnCheck (May–Dec 2026)"
+            style="
+              max-width: 100%;
+              border-radius: 8px;
+              box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            "
+          />
+        </div>
+        <p class="uncertainty-note" style="margin-bottom: 1.5rem">
+          7-day rolling average. Dashed lines = forecasted total volume. Solid
+          lines = forecasted actionable volume. Shaded region = non-actionable
+          "noise gap." AutoARIMA models trained on daily counts (2020–Apr 2026).
+        </p>
+
+        <div class="two-col">
+          <div class="kpi-card">
+            <div class="value" style="font-size: 1.8rem">GitHub_M</div>
+            <div style="margin-top: 1rem">
+              <table style="font-size: 0.85rem">
+                <tr>
+                  <td>Forecasted Total (May–Dec)</td>
+                  <td style="text-align: right"><strong>6,247</strong></td>
+                </tr>
+                <tr>
+                  <td>Forecasted Actionable</td>
+                  <td style="text-align: right"><strong>47</strong></td>
+                </tr>
+                <tr>
+                  <td>Actionable Ratio</td>
+                  <td style="text-align: right; color: var(--green)">
+                    <strong>0.8%</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Non-Actionable (Noise)</td>
+                  <td style="text-align: right; color: var(--muted)">99.2%</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="value" style="font-size: 1.8rem">VulnCheck</div>
+            <div style="margin-top: 1rem">
+              <table style="font-size: 0.85rem">
+                <tr>
+                  <td>Forecasted Total (May–Dec)</td>
+                  <td style="text-align: right"><strong>2,827</strong></td>
+                </tr>
+                <tr>
+                  <td>Forecasted Actionable</td>
+                  <td style="text-align: right"><strong>19</strong></td>
+                </tr>
+                <tr>
+                  <td>Actionable Ratio</td>
+                  <td style="text-align: right; color: var(--green)">
+                    <strong>0.7%</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Non-Actionable (Noise)</td>
+                  <td style="text-align: right; color: var(--muted)">99.3%</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout" style="margin-top: 1.5rem">
+          <strong>Key Finding:</strong> While GitHub Security Advisories is
+          forecasted to publish <strong>6,247</strong> total CVEs in the May–Dec
+          2026 window, only <strong>0.8%</strong> meet the threshold for
+          immediate prioritization. Similarly, VulnCheck's projected
+          <strong>2,827</strong> CVEs yield just
+          <strong>0.7%</strong> actionable entries. The overwhelming majority of
+          volume growth from these CNAs represents low-severity ecosystem
+          advisories — valuable for dependency tracking but not indicative of
+          active exploitation risk. <strong>Volume ≠ Burden.</strong>
+        </div>
+
+        <div class="callout methodology">
+          <strong>Historical context:</strong> Across all historical data
+          (2020–Apr 2026), GitHub_M shows 3.7% actionability (515 of 13,926) and
+          VulnCheck shows 4.8% (110 of 2,278). The forecasted decline in
+          actionable ratio reflects the model's expectation that volume growth
+          continues to outpace exploitation — newly published CVEs are
+          increasingly informational rather than actively exploited.
+        </div>
+      </div>
+
       <!-- Appendix: Day of Week -->
       <div class="section" style="opacity: 0.9">
         <h2>Appendix: Publication Cadence</h2>
