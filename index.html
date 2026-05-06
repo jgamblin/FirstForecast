@@ -1320,10 +1320,8 @@
         3528, 811, 791, 218, 200, 103, 91, 84, -89, -96, -170, -287, -530,
         -1391,
       ];
-      const cnaBarColors = cnaLabels.map((l) =>
-        l === "GHSA (GitHub_M)" || l === "VulnCheck"
-          ? palette.accent
-          : palette.primary,
+      const cnaBarColors = cnaChanges.map((v) =>
+        v >= 0 ? palette.accent : palette.primary,
       );
 
       new Chart(document.getElementById("cnaChart").getContext("2d"), {
@@ -1426,8 +1424,8 @@
             {
               label: "Actuals (Jan-Apr)",
               data: actuals,
-              borderColor: palette.primary,
-              backgroundColor: palette.primary,
+              borderColor: palette.accent,
+              backgroundColor: palette.accent,
               pointRadius: 5,
               pointStyle: "circle",
               borderWidth: 2.5,
@@ -1450,13 +1448,13 @@
                 5986,
                 6254,
               ],
-              borderColor: palette.accent,
-              backgroundColor: palette.accentSoft,
+              borderColor: palette.primary,
+              backgroundColor: "rgba(26, 54, 93, 0.08)",
               fill: true,
               borderDash: [5, 3],
               pointRadius: 4,
               pointStyle: "rectRot",
-              pointBackgroundColor: palette.accent,
+              pointBackgroundColor: palette.primary,
               borderWidth: 2.5,
               spanGaps: false,
               order: 2,
@@ -1534,13 +1532,13 @@
               label: "Total CVEs Published",
               data: [14287, 19862, 24647, 28313, 39724, 47822, 67900],
               backgroundColor: [
-                palette.primary,
-                palette.primary,
-                palette.primary,
-                palette.primary,
-                palette.primary,
-                palette.primary,
                 palette.accent,
+                palette.accent,
+                palette.accent,
+                palette.accent,
+                palette.accent,
+                palette.accent,
+                palette.primary,
               ],
               borderRadius: 3,
               borderSkipped: false,
@@ -1573,13 +1571,13 @@
               label: "CVEs Published (Jan-Apr 2026)",
               data: [2646, 4133, 4219, 3728, 3224, 948, 630],
               backgroundColor: [
-                palette.primary,
                 palette.accent,
                 palette.accent,
-                palette.primary,
-                palette.primary,
-                "rgba(190, 195, 198, 0.5)",
-                "rgba(190, 195, 198, 0.5)",
+                palette.accent,
+                palette.accent,
+                palette.accent,
+                palette.baseline,
+                palette.baseline,
               ],
               borderRadius: 3,
               borderSkipped: false,
