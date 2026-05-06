@@ -4,20 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CVE 2026 Half-Year Forecast Update — How It's Going</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Fira+Sans:wght@500;600&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.1.0/dist/chartjs-plugin-annotation.min.js"></script>
     <style>
       :root {
-        --primary: #1a1a2e;
-        --accent: #e94560;
-        --accent2: #0f3460;
-        --bg: #f8f9fa;
+        --primary: #002b07;
+        --accent: #ff8000;
+        --accent2: #00801a;
+        --bg: #f3f4f5;
         --card: #ffffff;
-        --text: #2d3436;
-        --muted: #636e72;
-        --green: #00b894;
-        --red: #d63031;
-        --orange: #e17055;
+        --text: #111111;
+        --muted: #444444;
+        --green: #55ab68;
+        --red: #b14434;
+        --orange: #ff8000;
         --border: #dfe6e9;
       }
       * {
@@ -27,7 +33,12 @@
       }
       body {
         font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          "Open Sans",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
         background: var(--bg);
         color: var(--text);
         line-height: 1.6;
@@ -142,7 +153,7 @@
         font-weight: 600;
       }
       .highlight-row {
-        background: #fff3f3;
+        background: rgba(255, 128, 0, 0.06);
       }
       .badge {
         display: inline-block;
@@ -156,12 +167,12 @@
         color: var(--red);
       }
       .badge-new {
-        background: #e0f7fa;
-        color: #00838f;
+        background: rgba(0, 128, 26, 0.1);
+        color: #00801a;
       }
       .badge-decline {
-        background: #f3e5f5;
-        color: #6a1b9a;
+        background: rgba(177, 68, 52, 0.1);
+        color: #b14434;
       }
       .narrative {
         font-size: 1.05rem;
@@ -172,14 +183,14 @@
         margin-bottom: 1rem;
       }
       .callout {
-        background: linear-gradient(135deg, #fff9c4, #fff3e0);
+        background: rgba(255, 128, 0, 0.06);
         border-left: 4px solid var(--orange);
         padding: 1rem 1.5rem;
         border-radius: 0 8px 8px 0;
         margin: 1.5rem 0;
       }
       .callout.methodology {
-        background: linear-gradient(135deg, #e3f2fd, #e8eaf6);
+        background: rgba(0, 128, 26, 0.06);
         border-left-color: var(--accent2);
       }
       .two-col {
@@ -1083,20 +1094,24 @@
     </div>
 
     <script>
-      // --- Design System ---
+      // --- Design System (FIRST.org palette) ---
       const palette = {
-        primary: "#2d3047",
-        primaryLight: "rgba(45, 48, 71, 0.35)",
-        accent: "#00b4d8",
-        accentSoft: "rgba(0, 180, 216, 0.15)",
-        warm: "#e76f51",
-        warmSoft: "rgba(231, 111, 81, 0.12)",
-        slate: "rgba(45, 48, 71, 0.6)",
-        muted: "rgba(150, 157, 172, 0.7)",
+        primary: "#1a365d",
+        primaryLight: "rgba(26, 54, 93, 0.35)",
+        accent: "#ff8000",
+        accentSoft: "rgba(255, 128, 0, 0.12)",
+        warm: "#b14434",
+        warmSoft: "rgba(177, 68, 52, 0.1)",
+        slate: "rgba(26, 54, 93, 0.6)",
+        muted: "rgba(129, 139, 141, 0.7)",
         gridLine: "rgba(0, 0, 0, 0.05)",
         zeroLine: "rgba(0, 0, 0, 0.15)",
-        baseline: "#bcc3ce",
-        baselineFill: "rgba(188, 195, 206, 0.12)",
+        baseline: "#bec3c6",
+        baselineFill: "rgba(190, 195, 198, 0.12)",
+        navy50: "#4b7395",
+        navy75: "#7db1ce",
+        cyan90: "#a9e5f7",
+        green: "#55ab68",
       };
 
       const fmtNum = (v) =>
@@ -1113,9 +1128,9 @@
           ticks: {
             font: {
               size: 11,
-              family: "-apple-system, BlinkMacSystemFont, sans-serif",
+              family: "'Open Sans', sans-serif",
             },
-            color: "#6b7280",
+            color: "#444444",
             ...(opts.x || {}),
           },
         },
@@ -1127,8 +1142,8 @@
             borderDash: [3, 3],
           },
           ticks: {
-            font: { size: 11 },
-            color: "#6b7280",
+            font: { size: 11, family: "'Open Sans', sans-serif" },
+            color: "#444444",
             callback: (v) => fmtNum(v),
           },
           ...(opts.y || {}),
@@ -1136,11 +1151,15 @@
       });
 
       const tooltipConfig = {
-        backgroundColor: "rgba(30, 32, 48, 0.92)",
-        titleFont: { size: 12, weight: "600" },
-        bodyFont: { size: 12 },
+        backgroundColor: "rgba(0, 43, 7, 0.92)",
+        titleFont: {
+          size: 12,
+          weight: "600",
+          family: "'Open Sans', sans-serif",
+        },
+        bodyFont: { size: 12, family: "'Open Sans', sans-serif" },
         padding: 10,
-        cornerRadius: 6,
+        cornerRadius: 4,
         boxPadding: 4,
         callbacks: {
           label: (ctx) =>
@@ -1367,7 +1386,7 @@
                     display: true,
                     content: "Mean: 163/day",
                     position: "start",
-                    backgroundColor: "rgba(107, 114, 128, 0.75)",
+                    backgroundColor: "rgba(0, 43, 7, 0.75)",
                     font: { size: 10, weight: "500" },
                     padding: { top: 3, bottom: 3, left: 6, right: 6 },
                     borderRadius: 3,
@@ -1515,7 +1534,7 @@
               },
               ticks: {
                 font: { size: 11 },
-                color: "#6b7280",
+                color: "#444444",
                 callback: (v) => fmtNum(v),
               },
               title: {
@@ -1527,7 +1546,7 @@
             y: {
               border: { display: false },
               grid: { display: false },
-              ticks: { font: { size: 11 }, color: "#374151" },
+              ticks: { font: { size: 11 }, color: "#111111" },
             },
           },
         },
@@ -1658,7 +1677,7 @@
                     display: true,
                     content: "Now",
                     position: "start",
-                    backgroundColor: "rgba(107, 114, 128, 0.7)",
+                    backgroundColor: "rgba(0, 43, 7, 0.75)",
                     font: { size: 9, weight: "500" },
                     padding: { top: 2, bottom: 2, left: 5, right: 5 },
                     borderRadius: 3,
