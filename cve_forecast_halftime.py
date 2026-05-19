@@ -13,7 +13,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from darts import TimeSeries
-from darts.models import ExponentialSmoothing, AutoARIMA
+from darts.models import ExponentialSmoothing
+try:
+    from darts.models import AutoARIMA
+    _USE_AUTOARIMA = True
+except ImportError:
+    _USE_AUTOARIMA = False
 from tqdm import tqdm
 
 
@@ -160,8 +165,12 @@ def generate_forecast(ts: TimeSeries) -> TimeSeries:
     cutoff = pd.Timestamp("2026-04-30")
     train = ts.drop_after(cutoff + pd.Timedelta(days=1))
 
-    print("Training AutoARIMA model...")
-    model = AutoARIMA()
+    try:
+        print("Training AutoARIMA model...")
+        model = AutoARIMA()
+    except (ImportError, Exception):
+        print("AutoARIMA unavailable on this platform — falling back to ExponentialSmoothing...")
+        model = ExponentialSmoothing()
     model.fit(train)
 
     print(f"Generating {FORECAST_HORIZON_DAYS}-day forecast (May–Dec 2026)...")
