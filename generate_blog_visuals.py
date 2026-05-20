@@ -529,17 +529,158 @@ def chart_epochal_shift() -> None:
 
 
 # ════════════════════════════════════════════════════════════════════════════
+# Chart 4 — Mozilla CNA Quarterly Spike
+# ════════════════════════════════════════════════════════════════════════════
+def chart_mozilla_cna_spike() -> None:
+    """
+    Quarterly Mozilla CNA CVE disclosure counts, 2020 Q1 – 2026 Q2.
+
+    Data from full cvelistV5 scan (206,230 files), filtering on
+    assignerShortName == 'mozilla', state == 'PUBLISHED'.
+
+    Key findings:
+      Q1 2025: 47 CVEs (stable baseline ~50/quarter through 2024)
+      Q1 2026: 124 CVEs  → +164% year-over-year
+      Q2 2026: 94 CVEs (partial — data through May 20 2026)
+      2022 Q4: 175 CVEs — batch backfill event, not organic growth
+
+    The blog text cited "141% spike" — corrected to +164%.
+    """
+    # Full quarterly counts from cvelistV5 scan
+    quarters = [
+        "2020\nQ1", "2020\nQ2", "2020\nQ3", "2020\nQ4",
+        "2021\nQ1", "2021\nQ2", "2021\nQ3", "2021\nQ4",
+        "2022\nQ1", "2022\nQ2", "2022\nQ3", "2022\nQ4",
+        "2023\nQ1", "2023\nQ2", "2023\nQ3", "2023\nQ4",
+        "2024\nQ1", "2024\nQ2", "2024\nQ3", "2024\nQ4",
+        "2025\nQ1", "2025\nQ2", "2025\nQ3", "2025\nQ4",
+        "2026\nQ1", "2026\nQ2*",
+    ]
+    counts = [
+        25, 23, 40, 45,    # 2020
+        46, 38, 23, 41,    # 2021
+         0,  1,  0,175,    # 2022 — Q4 is a batch backfill event
+         5, 85, 55, 47,    # 2023
+        51, 52, 47, 52,    # 2024 — stable ~50/quarter baseline
+        47, 62, 52, 47,    # 2025
+       124, 94,            # 2026 (Q2 partial through May 20)
+    ]
+
+    BACKFILL  = {11}   # 2022 Q4 batch backfill
+    SPIKE     = {24}   # 2026 Q1 AI-assisted spike
+    PARTIAL   = {25}   # 2026 Q2 still in progress
+
+    colors = [
+        PAL["amber"] if i in BACKFILL else
+        PAL["navy"]  if i in SPIKE    else
+        "#6B9FD4"    if i in PARTIAL  else   # muted navy for partial quarter
+        PAL["green"]
+        for i in range(len(quarters))
+    ]
+
+    # 2024 baseline average (~50.5/quarter)
+    baseline_2024 = (51 + 52 + 47 + 52) / 4
+
+    fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
+    fig.subplots_adjust(**MARG)
+
+    x = np.arange(len(quarters))
+    bars = ax.bar(x, counts, color=colors, width=0.66, zorder=3, linewidth=0)
+
+    # 2024 baseline reference line (over the 2024–2026 range only)
+    ax.plot([x[16] - 0.4, x[24] + 0.4], [baseline_2024, baseline_2024],
+            color=PAL["slate"], linewidth=1.5, linestyle="--", zorder=2, alpha=0.7)
+    ax.text(x[22] - 0.3, baseline_2024 + 3,
+            f"2024 avg: {baseline_2024:.0f} / quarter",
+            ha="center", va="bottom", fontsize=8.5,
+            color=PAL["slate"], style="italic")
+
+    # 2022 Q4 backfill annotation
+    bf_i = 11
+    ax.annotate(
+        "Batch backfill\nevent (2022 Q4)",
+        xy=(bf_i, counts[bf_i] + 2),
+        xytext=(bf_i - 2.5, 155),
+        arrowprops=dict(arrowstyle="->", color=PAL["amber"], lw=1.1,
+                        connectionstyle="arc3,rad=-0.15"),
+        fontsize=8.5, color=PAL["amber"], ha="center", va="bottom",
+    )
+
+    # 2026 Q1 spike — count label + % annotation
+    sp_i = 24
+    q1_25 = counts[20]   # 47
+    q1_26 = counts[24]   # 124
+    pct   = (q1_26 - q1_25) / q1_25 * 100   # +164%
+    ax.text(sp_i, q1_26 + 3, f"{q1_26}",
+            ha="center", va="bottom", fontsize=13,
+            fontweight="bold", color=PAL["navy"])
+    ax.annotate(
+        f"+{pct:.0f}% vs Q1 2025\n({q1_25} → {q1_26} CVEs)",
+        xy=(sp_i, q1_26 / 2),
+        xytext=(sp_i - 3.2, 115),
+        arrowprops=dict(arrowstyle="->", color=PAL["navy"], lw=1.3,
+                        connectionstyle="arc3,rad=0.2"),
+        fontsize=10, fontweight="bold", color=PAL["navy"],
+        ha="center", va="center",
+        bbox=_callout(ec=PAL["navy"], lw=1.3),
+    )
+
+    # 2026 Q2 partial label
+    pt_i = 25
+    ax.text(pt_i, counts[pt_i] + 3, f"{counts[pt_i]}\n(partial)",
+            ha="center", va="bottom", fontsize=8.5, color="#4A6E9B",
+            linespacing=1.2)
+
+    # Legend
+    handles = [
+        mpatches.Patch(color=PAL["green"],  label="Organic quarterly disclosures"),
+        mpatches.Patch(color=PAL["navy"],   label="2026 Q1  —  AI-assisted discovery spike"),
+        mpatches.Patch(color="#6B9FD4",     label="2026 Q2  —  partial (through May 20 2026)"),
+        mpatches.Patch(color=PAL["amber"],  label="2022 Q4  —  batch backfill event"),
+        plt.Line2D([0], [0], color=PAL["slate"], linestyle="--", linewidth=1.5,
+                   label=f"2024 quarterly average  ({baseline_2024:.0f} CVEs)"),
+    ]
+    ax.legend(handles=handles, loc="upper left",
+              fontsize=9.5, handlelength=1.4, handletextpad=0.6,
+              borderpad=0.8, labelspacing=0.55)
+
+    # Axes
+    ax.set_xticks(x)
+    ax.set_xticklabels(quarters, fontsize=8.5, linespacing=1.1)
+    ax.set_ylabel("Mozilla CVEs Published per Quarter",
+                  fontsize=11.5, color=PAL["sub"], labelpad=8)
+    ax.set_xlim(-0.6, len(quarters) - 0.4)
+    ax.set_ylim(0, 210)
+    ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:.0f}"))
+    _clean_ax(ax)
+
+    _header(fig,
+        "Mozilla CNA: Quarterly CVE Disclosures  (2020 – 2026)",
+        f"Q1 2026 reached {q1_26} disclosures — a +{pct:.0f}% year-over-year spike "
+        f"vs. the stable ~{baseline_2024:.0f}/quarter 2024 baseline")
+    _footer(fig,
+        f"Source: cvelistV5 full corpus scan (206,230 files)  ·  "
+        f"Filter: assignerShortName = 'mozilla', state = PUBLISHED  ·  "
+        f"2026 Q2 partial through May 20 2026  ·  "
+        f"2022 Q4 batch backfill excluded from trend analysis  ·  FirstForecast / FIRST.org 2026")
+    _save(fig, "mozilla_cna_spike")
+
+
+# ════════════════════════════════════════════════════════════════════════════
 if __name__ == "__main__":
     print(f"\nFirstForecast — Blog Visual Generator  (FIRST.org house style)")
     print(f"Output → {OUT_DIR}\n")
 
-    print("[1/3] CPE Explosion ...")
+    print("[1/4] CPE Explosion ...")
     chart_cpe_explosion()
 
-    print("[2/3] Rain vs. Flood ...")
+    print("[2/4] Rain vs. Flood ...")
     chart_rain_vs_flood()
 
-    print("[3/3] Epochal Shift ...")
+    print("[3/4] Epochal Shift ...")
     chart_epochal_shift()
+
+    print("[4/4] Mozilla CNA Spike ...")
+    chart_mozilla_cna_spike()
 
     print(f"\nDone. PNGs written to {OUT_DIR}")
