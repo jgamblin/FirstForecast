@@ -442,7 +442,8 @@ def chart_epochal_shift() -> None:
     ci_lo = proj * 0.92
 
     fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
-    fig.subplots_adjust(**MARG)
+    # Rotated tick labels need extra bottom clearance to avoid footer overlap
+    fig.subplots_adjust(**{**MARG, "bottom": 0.135})
 
     # CI shading
     ax.fill_between(proj_months, ci_lo, ci_hi,
