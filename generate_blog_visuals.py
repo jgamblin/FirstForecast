@@ -546,34 +546,24 @@ def chart_mozilla_cna_spike() -> None:
 
     The blog text cited "141% spike" — corrected to +164%.
     """
-    # Full quarterly counts from cvelistV5 scan
+    # Quarterly counts from cvelistV5 scan — 2024 onwards
     quarters = [
-        "2020\nQ1", "2020\nQ2", "2020\nQ3", "2020\nQ4",
-        "2021\nQ1", "2021\nQ2", "2021\nQ3", "2021\nQ4",
-        "2022\nQ1", "2022\nQ2", "2022\nQ3", "2022\nQ4",
-        "2023\nQ1", "2023\nQ2", "2023\nQ3", "2023\nQ4",
         "2024\nQ1", "2024\nQ2", "2024\nQ3", "2024\nQ4",
         "2025\nQ1", "2025\nQ2", "2025\nQ3", "2025\nQ4",
         "2026\nQ1", "2026\nQ2*",
     ]
     counts = [
-        25, 23, 40, 45,    # 2020
-        46, 38, 23, 41,    # 2021
-         0,  1,  0,175,    # 2022 — Q4 is a batch backfill event
-         5, 85, 55, 47,    # 2023
         51, 52, 47, 52,    # 2024 — stable ~50/quarter baseline
         47, 62, 52, 47,    # 2025
        124, 94,            # 2026 (Q2 partial through May 20)
     ]
 
-    BACKFILL  = {11}   # 2022 Q4 batch backfill
-    SPIKE     = {24}   # 2026 Q1 AI-assisted spike
-    PARTIAL   = {25}   # 2026 Q2 still in progress
+    SPIKE   = {8}   # 2026 Q1 AI-assisted spike
+    PARTIAL = {9}   # 2026 Q2 still in progress
 
     colors = [
-        PAL["amber"] if i in BACKFILL else
-        PAL["navy"]  if i in SPIKE    else
-        "#6B9FD4"    if i in PARTIAL  else   # muted navy for partial quarter
+        PAL["navy"] if i in SPIKE   else
+        "#6B9FD4"   if i in PARTIAL else   # muted navy for partial quarter
         PAL["green"]
         for i in range(len(quarters))
     ]
@@ -587,29 +577,18 @@ def chart_mozilla_cna_spike() -> None:
     x = np.arange(len(quarters))
     bars = ax.bar(x, counts, color=colors, width=0.66, zorder=3, linewidth=0)
 
-    # 2024 baseline reference line (over the 2024–2026 range only)
-    ax.plot([x[16] - 0.4, x[24] + 0.4], [baseline_2024, baseline_2024],
-            color=PAL["slate"], linewidth=1.5, linestyle="--", zorder=2, alpha=0.7)
-    ax.text(x[22] - 0.3, baseline_2024 + 3,
+    # 2024 baseline reference line — full width
+    ax.axhline(baseline_2024, color=PAL["slate"], linewidth=1.5,
+               linestyle="--", zorder=2, alpha=0.7)
+    ax.text(x[6] + 0.1, baseline_2024 + 3,
             f"2024 avg: {baseline_2024:.0f} / quarter",
             ha="center", va="bottom", fontsize=8.5,
             color=PAL["slate"], style="italic")
 
-    # 2022 Q4 backfill annotation
-    bf_i = 11
-    ax.annotate(
-        "Batch backfill\nevent (2022 Q4)",
-        xy=(bf_i, counts[bf_i] + 2),
-        xytext=(bf_i - 2.5, 155),
-        arrowprops=dict(arrowstyle="->", color=PAL["amber"], lw=1.1,
-                        connectionstyle="arc3,rad=-0.15"),
-        fontsize=8.5, color=PAL["amber"], ha="center", va="bottom",
-    )
-
     # 2026 Q1 spike — count label + % annotation
-    sp_i = 24
-    q1_25 = counts[20]   # 47
-    q1_26 = counts[24]   # 124
+    sp_i  = 8
+    q1_25 = counts[4]   # 47
+    q1_26 = counts[8]   # 124
     pct   = (q1_26 - q1_25) / q1_25 * 100   # +164%
     ax.text(sp_i, q1_26 + 3, f"{q1_26}",
             ha="center", va="bottom", fontsize=13,
@@ -617,7 +596,7 @@ def chart_mozilla_cna_spike() -> None:
     ax.annotate(
         f"+{pct:.0f}% vs Q1 2025\n({q1_25} → {q1_26} CVEs)",
         xy=(sp_i, q1_26 / 2),
-        xytext=(sp_i - 3.2, 115),
+        xytext=(sp_i - 2.8, 105),
         arrowprops=dict(arrowstyle="->", color=PAL["navy"], lw=1.3,
                         connectionstyle="arc3,rad=0.2"),
         fontsize=10, fontweight="bold", color=PAL["navy"],
@@ -626,17 +605,16 @@ def chart_mozilla_cna_spike() -> None:
     )
 
     # 2026 Q2 partial label
-    pt_i = 25
+    pt_i = 9
     ax.text(pt_i, counts[pt_i] + 3, f"{counts[pt_i]}\n(partial)",
             ha="center", va="bottom", fontsize=8.5, color="#4A6E9B",
             linespacing=1.2)
 
     # Legend
     handles = [
-        mpatches.Patch(color=PAL["green"],  label="Organic quarterly disclosures"),
-        mpatches.Patch(color=PAL["navy"],   label="2026 Q1  —  AI-assisted discovery spike"),
-        mpatches.Patch(color="#6B9FD4",     label="2026 Q2  —  partial (through May 20 2026)"),
-        mpatches.Patch(color=PAL["amber"],  label="2022 Q4  —  batch backfill event"),
+        mpatches.Patch(color=PAL["green"], label="Quarterly disclosures"),
+        mpatches.Patch(color=PAL["navy"],  label="2026 Q1  —  AI-assisted discovery spike"),
+        mpatches.Patch(color="#6B9FD4",    label="2026 Q2  —  partial (through May 20 2026)"),
         plt.Line2D([0], [0], color=PAL["slate"], linestyle="--", linewidth=1.5,
                    label=f"2024 quarterly average  ({baseline_2024:.0f} CVEs)"),
     ]
@@ -646,16 +624,16 @@ def chart_mozilla_cna_spike() -> None:
 
     # Axes
     ax.set_xticks(x)
-    ax.set_xticklabels(quarters, fontsize=8.5, linespacing=1.1)
+    ax.set_xticklabels(quarters, fontsize=10.5, linespacing=1.1)
     ax.set_ylabel("Mozilla CVEs Published per Quarter",
                   fontsize=11.5, color=PAL["sub"], labelpad=8)
     ax.set_xlim(-0.6, len(quarters) - 0.4)
-    ax.set_ylim(0, 210)
+    ax.set_ylim(0, 160)
     ax.yaxis.set_major_formatter(mticker.FuncFormatter(lambda v, _: f"{v:.0f}"))
     _clean_ax(ax)
 
     _header(fig,
-        "Mozilla CNA: Quarterly CVE Disclosures  (2020 – 2026)",
+        "Mozilla CNA: Quarterly CVE Disclosures  (2024 – 2026)",
         f"Q1 2026 reached {q1_26} disclosures — a +{pct:.0f}% year-over-year spike "
         f"vs. the stable ~{baseline_2024:.0f}/quarter 2024 baseline")
     _footer(fig,
