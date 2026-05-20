@@ -568,8 +568,8 @@ def chart_mozilla_cna_spike() -> None:
         for i in range(len(quarters))
     ]
 
-    # 2024 baseline average (~50.5/quarter)
-    baseline_2024 = (51 + 52 + 47 + 52) / 4
+    # 2024–2025 pre-spike baseline average (~51/quarter)
+    baseline_2024 = (51 + 52 + 47 + 52 + 47 + 62 + 52 + 47) / 8
 
     fig, ax = plt.subplots(figsize=(FIG_W, FIG_H))
     fig.subplots_adjust(**MARG)
@@ -581,7 +581,7 @@ def chart_mozilla_cna_spike() -> None:
     ax.axhline(baseline_2024, color=PAL["slate"], linewidth=1.5,
                linestyle="--", zorder=2, alpha=0.7)
     ax.text(x[6] + 0.1, baseline_2024 + 3,
-            f"2024 avg: {baseline_2024:.0f} / quarter",
+            f"2024–2025 avg: {baseline_2024:.0f} / quarter",
             ha="center", va="bottom", fontsize=8.5,
             color=PAL["slate"], style="italic")
 
@@ -616,7 +616,7 @@ def chart_mozilla_cna_spike() -> None:
         mpatches.Patch(color=PAL["navy"],  label="2026 Q1  —  AI-assisted discovery spike"),
         mpatches.Patch(color="#6B9FD4",    label="2026 Q2  —  partial (through May 20 2026)"),
         plt.Line2D([0], [0], color=PAL["slate"], linestyle="--", linewidth=1.5,
-                   label=f"2024 quarterly average  ({baseline_2024:.0f} CVEs)"),
+                   label=f"2024–2025 quarterly average  ({baseline_2024:.0f} CVEs)"),
     ]
     ax.legend(handles=handles, loc="upper left",
               fontsize=9.5, handlelength=1.4, handletextpad=0.6,
@@ -635,7 +635,7 @@ def chart_mozilla_cna_spike() -> None:
     _header(fig,
         "Mozilla CNA: Quarterly CVE Disclosures  (2024 – 2026)",
         f"Q1 2026 reached {q1_26} disclosures — a +{pct:.0f}% year-over-year spike "
-        f"vs. the stable ~{baseline_2024:.0f}/quarter 2024 baseline")
+        f"vs. the stable ~{baseline_2024:.0f}/quarter 2024–2025 baseline")
     _footer(fig,
         f"Source: cvelistV5 full corpus scan (206,230 files)  ·  "
         f"Filter: assignerShortName = 'mozilla', state = PUBLISHED  ·  "
