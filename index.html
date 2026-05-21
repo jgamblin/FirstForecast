@@ -240,7 +240,7 @@
           <div class="label">Excess CVEs<br />Above February Forecast</div>
         </div>
         <div class="kpi-card">
-          <div class="value">~68K</div>
+          <div class="value">65,632</div>
           <div class="label">Revised 2026 Total<br />(was 43,757)</div>
         </div>
       </div>
@@ -507,7 +507,7 @@
                   href="https://www.vulncheck.com/blog/anthropic-glasswing-cves"
                   >Project Glasswing</a
                 >
-                collaboration with Anthropic
+                collaboration with Anthropic (Q1-only: +164%)
               </td>
             </tr>
             <tr>
@@ -549,7 +549,7 @@
         </div>
 
         <div class="callout methodology">
-          <strong>The AI angle:</strong> Mozilla's 141% increase is partly
+          <strong>The AI angle:</strong> Mozilla's 141% increase (Jan–Apr YoY) is partly
           driven by
           <a href="https://red.anthropic.com/2026/mythos-preview/"
             >Project Glasswing</a
@@ -571,20 +571,19 @@
         <h2>The Revised Forecast</h2>
         <div class="narrative">
           <p>
-            We retrained an AutoARIMA model on the full daily time series from
-            January 2020 through April 30, 2026 and projected forward through
-            December. The revised model projects approximately 67,900 total CVEs
-            for 2026, compared to FIRST.org's original 43,757. That is a 55%
-            upward revision.
+            We retrained an ExponentialSmoothing model on the full daily time
+            series from January 2020 through April 30, 2026 and projected
+            forward through December. The revised model projects 65,632 total
+            CVEs for 2026, compared to FIRST.org's original 43,757. That is a
+            50% upward revision.
           </p>
           <p>
             A few caveats are important. This model assumes the current
             publication regime persists. If GHSA's backfill campaign saturates
             or VulnCheck's pipeline plateaus, actual volumes could come in
-            materially lower. The 80% prediction interval spans 55,000 to
-            80,000. The monthly projections below appear artificially smooth
-            because ARIMA forecasts converge toward a level at longer horizons.
-            Real months will be more volatile.
+            materially lower. The monthly projections below reflect an
+            ExponentialSmoothing model (AutoARIMA was unavailable on the
+            analysis platform); real months will be more volatile.
           </p>
         </div>
         <div class="chart-container">
@@ -602,57 +601,57 @@
           <tbody>
             <tr>
               <td>May 2026</td>
-              <td><strong>5,807</strong></td>
+              <td><strong>5,326</strong></td>
               <td>3,782</td>
-              <td class="positive">+2,025</td>
+              <td class="positive">+1,544</td>
             </tr>
             <tr>
               <td>June 2026</td>
-              <td><strong>5,655</strong></td>
+              <td><strong>5,498</strong></td>
               <td>3,655</td>
-              <td class="positive">+2,000</td>
+              <td class="positive">+1,843</td>
             </tr>
             <tr>
               <td>July 2026</td>
-              <td><strong>5,912</strong></td>
+              <td><strong>5,761</strong></td>
               <td>3,821</td>
-              <td class="positive">+2,091</td>
+              <td class="positive">+1,940</td>
             </tr>
             <tr>
               <td>August 2026</td>
-              <td><strong>5,981</strong></td>
+              <td><strong>5,499</strong></td>
               <td>3,750</td>
-              <td class="positive">+2,231</td>
+              <td class="positive">+1,749</td>
             </tr>
             <tr>
               <td>September 2026</td>
-              <td><strong>5,854</strong></td>
+              <td><strong>5,736</strong></td>
               <td>3,690</td>
-              <td class="positive">+2,164</td>
+              <td class="positive">+2,046</td>
             </tr>
             <tr>
               <td>October 2026</td>
-              <td><strong>6,117</strong></td>
+              <td><strong>5,784</strong></td>
               <td>3,790</td>
-              <td class="positive">+2,327</td>
+              <td class="positive">+1,994</td>
             </tr>
             <tr>
               <td>November 2026</td>
-              <td><strong>5,986</strong></td>
+              <td><strong>5,593</strong></td>
               <td>3,520</td>
-              <td class="positive">+2,466</td>
+              <td class="positive">+2,073</td>
             </tr>
             <tr>
               <td>December 2026</td>
-              <td><strong>6,254</strong></td>
+              <td><strong>6,143</strong></td>
               <td>3,876</td>
-              <td class="positive">+2,378</td>
+              <td class="positive">+2,267</td>
             </tr>
             <tr style="background: #f8f8f8; font-weight: 700">
               <td>Full Year 2026</td>
-              <td>~67,900</td>
+              <td>65,632</td>
               <td>43,757</td>
-              <td class="positive">+24,100 (+55%)</td>
+              <td class="positive">+21,875 (+50%)</td>
             </tr>
           </tbody>
         </table>
@@ -718,7 +717,7 @@
               <table style="font-size: 0.85rem">
                 <tr>
                   <td>Forecasted Total (May to Dec)</td>
-                  <td style="text-align: right"><strong>6,247</strong></td>
+                  <td style="text-align: right"><strong>7,773</strong></td>
                 </tr>
                 <tr>
                   <td>Forecasted Actionable</td>
@@ -727,12 +726,12 @@
                 <tr>
                   <td>Actionable Ratio</td>
                   <td style="text-align: right; color: var(--green)">
-                    <strong>0.8%</strong>
+                    <strong>0.6%</strong>
                   </td>
                 </tr>
                 <tr>
                   <td>Non-Actionable</td>
-                  <td style="text-align: right; color: var(--muted)">99.2%</td>
+                  <td style="text-align: right; color: var(--muted)">99.4%</td>
                 </tr>
               </table>
             </div>
@@ -743,11 +742,11 @@
               <table style="font-size: 0.85rem">
                 <tr>
                   <td>Forecasted Total (May to Dec)</td>
-                  <td style="text-align: right"><strong>2,827</strong></td>
+                  <td style="text-align: right"><strong>3,027</strong></td>
                 </tr>
                 <tr>
                   <td>Forecasted Actionable</td>
-                  <td style="text-align: right"><strong>19</strong></td>
+                  <td style="text-align: right"><strong>22</strong></td>
                 </tr>
                 <tr>
                   <td>Actionable Ratio</td>
@@ -766,9 +765,9 @@
 
         <div class="callout" style="margin-top: 1.5rem">
           <strong>Bottom line:</strong> GitHub Security Advisories is forecasted
-          to publish 6,247 CVEs in the May through December window, but only
-          0.8% meet the threshold for immediate prioritization. VulnCheck's
-          projected 2,827 CVEs yield just 0.7% actionable entries. The
+          to publish 7,773 CVEs in the May through December window, but only
+          0.6% meet the threshold for immediate prioritization. VulnCheck's
+          projected 3,027 CVEs yield just 0.7% actionable entries. The
           overwhelming majority of volume growth represents low-severity
           ecosystem advisories that are valuable for dependency tracking but do
           not indicate active exploitation risk. Volume does not equal burden.
@@ -872,11 +871,13 @@
           </p>
 
           <p>
-            The forecast model is AutoARIMA (via
+            The forecast model is ExponentialSmoothing (via
             <a href="https://unit8co.github.io/darts/">Darts</a>) trained on
-            daily CVE counts from January 1, 2020 through April 30, 2026. The
-            exploitability overlay uses CISA KEV (1,587 entries) and EPSS scores
-            (330,544 CVEs) as of May 6, 2026.
+            daily CVE counts from January 1, 2020 through April 30, 2026.
+            AutoARIMA was the intended model but is unavailable on Python 3.14
+            (no <code>statsforecast</code> wheel). The exploitability overlay
+            uses CISA KEV (1,587 entries, filtered to ≤ May 1 2026) and EPSS
+            scores (329,934 CVEs scored) from the May 1, 2026 daily snapshot.
           </p>
 
           <p>
@@ -891,7 +892,7 @@
 
       <footer>
         <p>
-          Generated May 5, 2026 &bull; AutoARIMA (Darts) &bull; Data: CVE
+          Generated May 21, 2026 &bull; ExponentialSmoothing (Darts) &bull; Data: CVE
           Program cvelistV5
         </p>
         <p style="margin-top: 0.3rem">
@@ -1439,14 +1440,14 @@
                 null,
                 null,
                 5660,
-                5807,
-                5655,
-                5912,
-                5981,
-                5854,
-                6117,
-                5986,
-                6254,
+                5326,
+                5498,
+                5761,
+                5499,
+                5736,
+                5784,
+                5593,
+                6143,
               ],
               borderColor: palette.primary,
               backgroundColor: "rgba(26, 54, 93, 0.08)",
@@ -1530,7 +1531,7 @@
           datasets: [
             {
               label: "Total CVEs Published",
-              data: [14287, 19862, 24647, 28313, 39724, 47822, 67900],
+              data: [14287, 19862, 24647, 28313, 39724, 47822, 65632],
               backgroundColor: [
                 palette.accent,
                 palette.accent,
