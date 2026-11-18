@@ -29,8 +29,11 @@ FORECAST_HORIZON_DAYS = 245  # May 1 → Dec 31 2026
 COMPARISON_START = "2026-01-01"
 COMPARISON_END = "2026-04-30"
 
-# February 2026 FIRST.org forecast (Average Case) — monthly CVE counts
-# Source: https://www.first.org/blog/20260211-vulnerability-forecast-2026
+# Monthly baseline used for the comparison. It sums to 43,757.
+# CORRECTION 2026-11-18: this is NOT a FIRST publication. FIRST's February 2026
+# forecast (https://www.first.org/blog/20260211-vulnerability-forecast-2026) gave a
+# median of 59,427 with a 90% interval of 30,012 to 117,673 and no monthly breakdown.
+# The values are kept so the May 2026 results can be reproduced.
 FEBRUARY_FORECAST_MONTHLY = {
     "2026-01": 3338,
     "2026-02": 3320,

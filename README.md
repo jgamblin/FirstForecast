@@ -1,5 +1,11 @@
 # CVE 2026 Half-Year Forecast Update
 
+> **Correction, 18 November 2026.** The 43,757 baseline in this repository is not a number FIRST published. [FIRST's February forecast](https://www.first.org/blog/20260211-vulnerability-forecast-2026) gave a median of 59,427 CVEs for 2026, with a 90% interval of 30,012 to 117,673. The monthly figures in `FEBRUARY_FORECAST_MONTHLY`, which sum to 43,757, came from this repository and I labelled them as FIRST's. That was my error.
+>
+> Every comparison below is against that baseline: the +46.3% drift, the 30.6% MAPE, the excess CVEs and the 50% revision. The chart labels carry the same wording. FIRST did not publish a monthly breakdown. Spread evenly across the year, its median comes to 19,809 for January to April, and the 20,293 CVEs published in those months were 2.4% above that.
+>
+> The revised projection of 65,632 is this model's own output and does not depend on the baseline. The findings below are left as published in May 2026.
+
 **How It's Going:** Comparing the [February 2026 FIRST.org Vulnerability Forecast](https://www.first.org/blog/20260211-vulnerability-forecast-2026) against actual CVE publication data (January–April 2026).
 
 ## Live Report
